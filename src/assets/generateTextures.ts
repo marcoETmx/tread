@@ -372,6 +372,108 @@ function sheet(
   return el
 }
 
+const SKYLINE_WIDTH = 2560
+const SKYLINE_HEIGHT = 420
+
+function seededRandom(seed: number): () => number {
+  let state = seed >>> 0
+  return () => {
+    state = (Math.imul(state, 1664525) + 1013904223) >>> 0
+    return state / 4294967296
+  }
+}
+
+type SkylineBuilding = {
+  x: number
+  w: number
+  h: number
+  kind: 'block' | 'tower' | 'step' | 'spire' | 'antenna'
+}
+
+function layoutSkyline(rng: () => number, width: number, maxHeight: number): SkylineBuilding[] {
+  const buildings: SkylineBuilding[] = []
+  let x = -8
+  while (x < width + 12) {
+    const roll = rng()
+    const kind: SkylineBuilding['kind'] =
+      roll > 0.92 ? 'spire' : roll > 0.78 ? 'tower' : roll > 0.62 ? 'step' : roll > 0.48 ? 'antenna' : 'block'
+    const w =
+      kind === 'tower'
+        ? 28 + Math.floor(rng() * 22)
+        : kind === 'spire'
+          ? 36 + Math.floor(rng() * 18)
+          : 42 + Math.floor(rng() * 58)
+    const h =
+      kind === 'tower'
+        ? Math.floor(maxHeight * (0.72 + rng() * 0.26))
+        : kind === 'spire'
+          ? Math.floor(maxHeight * (0.58 + rng() * 0.22))
+          : Math.floor(maxHeight * (0.28 + rng() * 0.46))
+    buildings.push({ x, w, h, kind })
+    x += w + Math.floor(rng() * 10) - 3
+  }
+  return buildings
+}
+
+function drawWindows(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  top: number,
+  w: number,
+  h: number,
+  color: string,
+  lit: number,
+  rng: () => number,
+): void {
+  ctx.fillStyle = color
+  const inset = 5
+  for (let wy = top + 8; wy < top + h - 14; wy += 11) {
+    for (let wx = x + inset; wx < x + w - inset - 3; wx += 8) {
+      if (rng() < lit) ctx.fillRect(wx, wy, 4, 5)
+    }
+  }
+}
+
+function drawSkylineLayer(
+  ctx: CanvasRenderingContext2D,
+  buildings: readonly SkylineBuilding[],
+  canvasHeight: number,
+  body: string,
+  windows: string,
+  rng: () => number,
+  yNudge: number,
+): void {
+  for (const building of buildings) {
+    const top = canvasHeight - building.h + yNudge
+    ctx.fillStyle = body
+    ctx.fillRect(building.x, top, building.w, building.h - yNudge)
+
+    if (building.kind === 'step') {
+      const stepW = Math.floor(building.w * 0.55)
+      const stepH = Math.floor(building.h * 0.22)
+      ctx.fillRect(building.x + Math.floor((building.w - stepW) / 2), top - stepH, stepW, stepH)
+    }
+
+    if (building.kind === 'tower' || building.kind === 'antenna') {
+      const mastH = 16 + Math.floor(rng() * 28)
+      ctx.fillRect(building.x + Math.floor(building.w / 2) - 1, top - mastH, 3, mastH)
+      ctx.fillRect(building.x + Math.floor(building.w / 2) - 5, top - mastH + 4, 11, 3)
+    }
+
+    if (building.kind === 'spire') {
+      const mid = building.x + Math.floor(building.w / 2)
+      ctx.beginPath()
+      ctx.moveTo(building.x + 4, top)
+      ctx.lineTo(mid, top - 28)
+      ctx.lineTo(building.x + building.w - 4, top)
+      ctx.closePath()
+      ctx.fill()
+    }
+
+    drawWindows(ctx, building.x, top, building.w, building.h, windows, building.kind === 'tower' ? 0.82 : 0.62, rng)
+  }
+}
+
 function skyTexture(): HTMLCanvasElement {
   const { el, ctx } = canvas(160, 90)
   const gradient = ctx.createLinearGradient(0, 0, 0, 90)
@@ -383,35 +485,45 @@ function skyTexture(): HTMLCanvasElement {
   return el
 }
 
+function drawLandmarkTower(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  canvasHeight: number,
+  body: string,
+  windows: string,
+): void {
+  const w = 48
+  const h = 390
+  const top = canvasHeight - h
+  ctx.fillStyle = body
+  ctx.fillRect(x, top + 70, w, h - 70)
+  ctx.fillRect(x + 10, top + 24, 28, 50)
+  ctx.fillRect(x + 22, top, 4, 28)
+  ctx.fillRect(x + 16, top + 8, 16, 4)
+  drawWindows(ctx, x, top + 70, w, h - 70, windows, 0.88, seededRandom(0x70e4))
+}
+
 function skylineTexture(): HTMLCanvasElement {
-  const { el, ctx } = canvas(320, 90)
-  ctx.fillStyle = '#051D2E'
-  const blocks = [
-    [0, 48, 28],
-    [24, 32, 36],
-    [52, 40, 30],
-    [78, 22, 42],
-    [108, 50, 26],
-    [132, 28, 38],
-    [160, 44, 28],
-    [188, 18, 46],
-    [214, 38, 32],
-    [248, 52, 24],
-    [276, 26, 40],
-    [300, 46, 28],
-  ] as const
-  for (const [x, top, w] of blocks) {
-    ctx.fillRect(x, top, w, 90 - top)
-    ctx.fillStyle = '#FFD27A'
-    for (let wx = x + 4; wx < x + w - 4; wx += 8) {
-      for (let wy = top + 6; wy < 80; wy += 10) {
-        if ((wx + wy) % 5 !== 0) ctx.fillRect(wx, wy, 4, 5)
-      }
-    }
-    ctx.fillStyle = '#051D2E'
-  }
+  const width = SKYLINE_WIDTH
+  const height = SKYLINE_HEIGHT
+  const { el, ctx } = canvas(width, height)
+  ctx.clearRect(0, 0, width, height)
+
+  const farRng = seededRandom(0x71ead)
+  const midRng = seededRandom(0xc0a71)
+  const nearRng = seededRandom(0x51a1e)
+
+  const far = layoutSkyline(farRng, width, 200)
+  const mid = layoutSkyline(midRng, width, 290)
+  const near = layoutSkyline(nearRng, width, 340)
+
+  drawSkylineLayer(ctx, far, height, '#3A6280', '#E8C98A', farRng, 0)
+  drawSkylineLayer(ctx, mid, height, '#16344C', '#FFD27A', midRng, 0)
+  drawLandmarkTower(ctx, 1180, height, '#0B2838', '#FFD27A')
+  drawSkylineLayer(ctx, near, height, '#051D2E', '#E8B86A', nearRng, 0)
+
   ctx.fillStyle = '#0B2838'
-  ctx.fillRect(0, 82, 320, 8)
+  ctx.fillRect(0, height - 14, width, 14)
   return el
 }
 
