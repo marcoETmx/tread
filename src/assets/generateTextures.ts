@@ -72,289 +72,558 @@ const PAL = {
   X: '#FF3B3B',
   P: '#6B4A2B',
   p: '#4A321C',
+  I: '#07080A',
+  U: '#B5522A',
+  E: '#D4A574',
+  L: '#6B7A3A',
+  H: '#1A2228',
+  T: '#3A3228',
+  Q: '#F0C878',
 } satisfies Palette
 
-function playerFrame(legs: readonly string[]): string[] {
-  return [
-    '......CCCC......',
-    '.....CCCCCC.....',
-    '.....CCOOCC.....',
-    '....CRRSSRC.....',
-    '....CSSSSSC.....',
-    '.....SsSSsS.....',
-    '.....SSSSSS.....',
-    '......sSSs......',
-    '.....KKKKKK.....',
-    '....KKWWKKKK....',
-    '....KKKKOKKK....',
-    '...kKKKKKKKKk...',
-    '...kKKKKKKKKk...',
-    '....KKKKKKKK....',
-    '.....kKDDKk.....',
-    ...legs,
-    '................',
-    '................',
-  ]
+function shiftRow(row: string, n: number): string {
+  const width = row.length
+  if (n > 0) return `${'.'.repeat(n)}${row.slice(0, width - n)}`
+  if (n < 0) return `${row.slice(-n)}${'.'.repeat(-n)}`.slice(0, width)
+  return row
 }
 
-const PLAYER_IDLE = playerFrame([
-  '.....DDDDDD.....',
-  '.....DD..DD.....',
-  '.....Dd..Dd.....',
-  '.....DD..DD.....',
-  '.....DD..DD.....',
-  '.....BB..BB.....',
-  '.....BB..BB.....',
-])
+function head(lean: number): string[] {
+  return [
+    '......IIII......',
+    '.....ICCCCI.....',
+    '....ICCCCCCI....',
+    '....ICCOOCCI....',
+    '....ICRSSSCI....',
+    '....ICSSSSCI....',
+    '.....ISSSSI.....',
+    '......IssI......',
+  ].map((row) => shiftRow(row, lean))
+}
 
-const PLAYER_WALK_A = playerFrame([
-  '.....DDDDDD.....',
-  '....DD....DD....',
-  '....Dd....Dd....',
-  '...DD......DD...',
-  '..DD........DD..',
-  '..BB........BB..',
-  '..BB........BB..',
-])
+function playerFrame(legs: readonly string[], lean = 0): string[] {
+  const torso = [
+    shiftRow('.....IKKKKKI....', lean),
+    shiftRow('....IKKWWKKOI...', lean),
+    shiftRow('....IKKKKKKKI...', lean),
+    shiftRow('...IkKKKKKKKkI..', lean),
+    shiftRow('....IKKKKKKKI...', lean),
+    shiftRow('.....IkDDIKI....', lean),
+  ]
+  return [...head(lean), ...torso, ...legs]
+}
 
-const PLAYER_WALK_B = playerFrame([
-  '.....DDDDDD.....',
-  '.....DD..DD.....',
-  '.....Dd..Dd.....',
-  '.....DD..DD.....',
-  '.....DD..DD.....',
-  '.....BB..BB.....',
-  '.....BB..BB.....',
-])
+const LEGS_IDLE = [
+  '.....IDDDDI.....',
+  '.....ID..DI.....',
+  '.....Id..dI.....',
+  '.....ID..DI.....',
+  '....IBB..BBI....',
+  '....IBB..BBI....',
+  '....II....II....',
+  '................',
+  '................',
+  '................',
+]
 
-const PLAYER_WALK_C = playerFrame([
-  '.....DDDDDD.....',
-  '....DD....DD....',
-  '...Dd......dD...',
-  '..DD........DD..',
-  '.DD..........DD.',
-  '.BB..........BB.',
-  '.BB..........BB.',
-])
+const LEGS_IDLE_B = [
+  '.....IDDDDI.....',
+  '.....ID..DI.....',
+  '.....Id..dI.....',
+  '.....ID..DI.....',
+  '....IBB..BBI....',
+  '....IBB..BBI....',
+  '.....I....I.....',
+  '................',
+  '................',
+  '................',
+]
 
-const PLAYER_JUMP = playerFrame([
-  '.....DDDDDD.....',
-  '....DD....DD....',
-  '...Dd......dD...',
-  '..DD........DD..',
-  '..DD........DD..',
-  '..BB........BB..',
-  '..BB........BB..',
-])
+const LEGS_WALK: readonly (readonly string[])[] = [
+  [
+    '....IDDDDDI.....',
+    '...IDD...DDI....',
+    '..IDd.....dDI...',
+    '.IDD.......DDI..',
+    'IBB.........BBI.',
+    'IBB.........BBI.',
+    'II...........II.',
+    '................',
+    '................',
+    '................',
+  ],
+  [
+    '.....IDDDDI.....',
+    '....IDD.DDI.....',
+    '...IDd...dI.....',
+    '..IDD.....DI....',
+    '.IBB.....BBI....',
+    '.IBB.....BBI....',
+    '.II.......II....',
+    '................',
+    '................',
+    '................',
+  ],
+  [
+    '.....IDDDDI.....',
+    '.....ID.DI......',
+    '....IDd.dI......',
+    '....IDD.DDI.....',
+    '...IBB.BBI......',
+    '...IBB.BBI......',
+    '...II...II......',
+    '................',
+    '................',
+    '................',
+  ],
+  [
+    '....IDDDDDI.....',
+    '...IDI...IDI....',
+    '..IDd.....dI....',
+    '.IDD.......DI...',
+    'IBBI.......IBBI.',
+    'IBB.........BBI.',
+    'II...........II.',
+    '................',
+    '................',
+    '................',
+  ],
+  [
+    '.....IDDDDI.....',
+    '....IDD.DDI.....',
+    '....IDd.dDI.....',
+    '.....ID.DI......',
+    '....IBB.BBI.....',
+    '....IBB.BBI.....',
+    '....II...II.....',
+    '................',
+    '................',
+    '................',
+  ],
+  [
+    '.....IDDDDI.....',
+    '....IDI..DI.....',
+    '...IDd...dI.....',
+    '..IDD.....DI....',
+    '.IBB......BBI...',
+    '.IBB......BBI...',
+    '.II........II...',
+    '................',
+    '................',
+    '................',
+  ],
+]
 
-const PLAYER_FALL = playerFrame([
-  '.....DDDDDD.....',
-  '.....D....D.....',
-  '.....D....D.....',
-  '....DD....DD....',
-  '....DD....DD....',
-  '....BB....BB....',
-  '....BB....BB....',
-])
+const LEGS_JUMP = [
+  '....IDDDDDDI....',
+  '...IDD....DDI...',
+  '..IDd......dDI..',
+  '..IDD......DDI..',
+  '.IBB........BBI.',
+  '.IBB........BBI.',
+  '.II..........II.',
+  '................',
+  '................',
+  '................',
+]
 
-const PLAYER_INSTALL = [
-  '......CCCC......',
-  '.....CCCCCC.....',
-  '.....CCOOCC.....',
-  '....CRRSSRC.....',
-  '....CSSSSSC.....',
-  '.....SSSSSS.....',
-  '......sSSs......',
-  '.....KKKKKK.....',
-  '....KKWWKKKK....',
-  '...kKKKKOKKKk...',
-  '...kKKKKKKKKk...',
-  '....KKKKKKKK....',
-  '....OOOOOOOO....',
-  '.....kKDDKk.....',
-  '....DDDDDDDD....',
-  '....DD....DD....',
-  '....DD....DD....',
-  '...DD......DD...',
-  '...BB......BB...',
-  '...BB......BB...',
+const LEGS_FALL = [
+  '.....ID..DI.....',
+  '....ID....DI....',
+  '...IDd....dDI...',
+  '...IDD....DDI...',
+  '..IBB......BBI..',
+  '..IBB......BBI..',
+  '..II........II..',
+  '................',
+  '................',
+  '................',
+]
+
+const PLAYER_HURT = [
+  '....I......I....',
+  '...IK.IIII.KI...',
+  '..IKKICCCCIKKI..',
+  '..IK.ICCCCCI.KI.',
+  '...I.ICCOOCCI.I.',
+  '....IICRXXSCI...',
+  '....IICSSSSCI...',
+  '.....IISSSSI....',
+  '......IIssI.....',
+  '.....IKKKKKI....',
+  '....IKKWWKKOI...',
+  '...IkKKKKKKKkI..',
+  '....IKKKKKKKI...',
+  '.....IkDDIKI....',
+  '....IDD...DDI...',
+  '...IDd.....dI...',
+  '..IBB.......BBI.',
+  '..IBB.......BBI.',
+  '..II.........II.',
+  '................',
   '................',
   '................',
   '................',
   '................',
 ]
 
-const DOG_A = [
+const PLAYER_INSTALL_A = [
+  '......IIII......',
+  '.....ICCCCI.....',
+  '....ICCCCCCI....',
+  '....ICCOOCCI....',
+  '....ICRSSSCI....',
+  '....ICSSSSCI....',
+  '.....ISSSSI.....',
+  '......IssI......',
+  '.....IKKKKKI....',
+  '....IKOOOOOKI...',
+  '....IKOoooOKI...',
+  '...IkKOOOOOKkI..',
+  '....IKKKKKKKI...',
+  '....IOOOOOOOI...',
+  '.....IDDDDDI....',
+  '....IDD..DDI....',
+  '....ID....DI....',
+  '...IBB....BBI...',
+  '...IBB....BBI...',
+  '...II......II...',
   '................',
-  '..rr............',
-  '.rRRrr....rr....',
-  'rRRRRRrrrrRRr...',
-  '.RRRRRRRRRRR....',
-  '..BB.RRRR.BB....',
-  '..BB......BB....',
+  '................',
+  '................',
   '................',
 ]
 
-const DOG_B = [
+const PLAYER_INSTALL_B = [
+  '......IIII......',
+  '.....ICCCCI.....',
+  '....ICCCCCCI....',
+  '....ICCOOCCI....',
+  '....ICRSSSCI....',
+  '....ICSSSSCI....',
+  '.....ISSSSI.....',
+  '......IssI......',
+  '.....IKKKKKI....',
+  '....IKOYYOOKI...',
+  '....IKOYWYOI....',
+  '...IkKOOOOOKkI..',
+  '....IKKKKKKKI...',
+  '....IOOOOOOOI...',
+  '.....IDDDDDI....',
+  '....IDD..DDI....',
+  '....ID....DI....',
+  '...IBB....BBI...',
+  '...IBB....BBI...',
+  '...II......II...',
   '................',
-  '..rr............',
-  '.rRRrr....rr....',
-  'rRRRRRrrrrRRr...',
-  '.RRRRRRRRRRR....',
-  '.BB..RRRR..BB...',
-  'BB........BB....',
+  '................',
+  '................',
   '................',
 ]
 
-const CABLE = [
-  '....OOOO....',
-  '..OOooooOO..',
-  '.OOoCNNNoOO.',
-  '.OoCNWWCNoO.',
-  'OOoCWWWWCoOO',
-  'OoCNWooWNCoO',
-  'OoCNWooWNCoO',
-  'OOoCWWWWCoOO',
-  '.OoCNWWCNoO.',
-  '.OOoCNNNoOO.',
-  '..OOooooOO..',
-  '....OOOO....',
+const DOG_FRAMES = [
+  [
+    '................',
+    '..IrrI..........',
+    '.IrRRIrI...IrI..',
+    'IrRRRRRIrrrIRIr.',
+    'I.RRRRRRRRRRRI..',
+    '..IBI.RRRR.IBI..',
+    '..IBI......IBI..',
+    '...I........I...',
+    '................',
+    '................',
+  ],
+  [
+    '................',
+    '..IrrI..........',
+    '.IrRRIrI...IrI..',
+    'IrRRRRRIrrrIRIr.',
+    'I.RRRRRRRRRRRI..',
+    '.IBI..RRRR..IBI.',
+    'IBI........IBI..',
+    'I...........I...',
+    '................',
+    '................',
+  ],
+  [
+    '................',
+    '..IrrI..........',
+    '.IrRRIrI..IrrI..',
+    'IrRRRRRIrrrIRIr.',
+    'I.RRRRRRRRRRRI..',
+    '..IBI.RRRR.IBI..',
+    '...IBI....IBI...',
+    '....I......I....',
+    '................',
+    '................',
+  ],
+  [
+    '................',
+    '..IrrI..........',
+    '.IrRRIrI...IrI..',
+    'IrRRRRRIrrrIRIr.',
+    'I.RRRRRRRRRRRI..',
+    '.IBI..RRRRIBI...',
+    '.IBI.......IBI..',
+    '.I...........I..',
+    '................',
+    '................',
+  ],
+]
+
+const CABLE_A = [
+  '....IOOOOI....',
+  '..IOooooOOI...',
+  '.IOoCNNNoOOI..',
+  '.IoCNWWCNoOI..',
+  'IOoCWWWWCoOOI.',
+  'IoCNWooWNCoOI.',
+  'IoCNWooWNCoOI.',
+  'IOoCWWWWCoOOI.',
+  '.IoCNWWCNoOI..',
+  '.IOoCNNNoOOI..',
+  '..IOooooOOI...',
+  '....IOOOOI....',
+]
+
+const CABLE_B = [
+  '....IOOOOI....',
+  '..IOoooOOOI...',
+  '.IOoNCCCoOOI..',
+  '.IoCWNNWCNoI..',
+  'IOoCWWWWCoOOI.',
+  'IoCNoWWWoNCOI.',
+  'IoCNoWWWoNCOI.',
+  'IOoCWWWWCoOOI.',
+  '.IoCWNNWCNoI..',
+  '.IOoNCCCoOOI..',
+  '..IOoooOOOI...',
+  '....IOOOOI....',
 ]
 
 const VAN = [
-  '........................',
-  '.........CCCCCCCCCCC....',
-  '.......CCCCCCCCCCCCCCC..',
-  '......CCNNNNNNNNNNNCCC..',
-  '......CCNYYYYYYYYYNCCC..',
-  '.....CCCNYYYYYYYYYNCCCC.',
-  '.....CCCCCCCCCCCCCCCCCC.',
-  '....CCOOOOOOOOOOOOOOCCC.',
-  '....CCCCCCCCCCCCCCCCCCC.',
-  '...CCCCCCCCCCCCCCCCCCCC.',
-  '...CC..........CC....CC.',
-  '...C............C....C..',
-  '..CCC..........CCC..CCC.',
-  '.CBBBC........CBBBCBBBC.',
-  '.CBWBC........CBWBCBWBC.',
-  '.CBBBC........CBBBCBBBC.',
-  '..CCC..........CCC..CCC.',
+  '............................',
+  '..........IIIIIIIIIII.......',
+  '........IICCCCCCCCCCCII.....',
+  '.......IICCIIIIIIIIIICCII...',
+  '......IICCNNNNNNNNNNNCCCI...',
+  '......IICCNYYYYYYYYYNCCCI...',
+  '.....IICCCNYYYYYYYYYNCCCCI..',
+  '.....IICCCCCCCCCCCCCCCCCCI..',
+  '....IICCOOOOOOOOOOOOOOCCCI..',
+  '....IICCCCCCCCCCCCCCCCCCCI..',
+  '...IICCCCCCCCCCCCCCCCCCCCI..',
+  '...IICC..........ICC...CCI..',
+  '...ICC............IC....CI..',
+  '..ICCC..........ICCC..ICCI..',
+  '.ICBBBI........ICBBBICBBBI..',
+  '.ICBWBI........ICBWBICBWBI..',
+  '.ICBBBI........ICBBBICBBBI..',
+  '..ICCCI.........ICCCI.ICCI..',
 ]
 
 const HOUSE = [
   '...............................',
-  '..............mmmmm.............',
-  '.............mMMMMMm............',
-  '............mMMCCMMMm...........',
-  '...........mMMCCCCMMMm..........',
-  '..........mMMMCCCCMMMmm.........',
-  '.........mmMMMMMMMMMMmmm........',
-  '........mmmmmmmmmmmmmmmmm.......',
-  '........mMMMMMMMMMMMMMMMm.......',
-  '........mMMYYYYMMYYYYMMMm.......',
-  '........mMMYYYYMMYYYYMMMm.......',
-  '........mMMMMMMMMMMMMMMMm.......',
-  '........mMMYYYYMMYYYYMMMm.......',
-  '........mMMYYYYMMYYYYMMMm.......',
-  '........mMMMMMMMMMMMMMMMm.......',
-  '........mMMYYYYMMPPPMMMMm.......',
-  '........mMMYYYYMMpPpMMMMm.......',
-  '........mMMMMMMMMpPpMMMMm.......',
-  '........mMMMMMMMMPPMMMMMm.......',
-  '........mmmmmmmmmmmmmmmmm.......',
+  '..............ImmmmI...........',
+  '.............ImMMMMIm..........',
+  '............ImMMCCMMIm.........',
+  '...........ImMMCCCCMMIm........',
+  '..........ImMMMCCCCMMImm.......',
+  '.........ImmMMMMMMMMMMmmm......',
+  '........ImmmmmmmmmmmmmmmmI.....',
+  '........ImMMMMMMMMMMMMMMIm.....',
+  '........ImMMYYYYMMYYYYMMIm.....',
+  '........ImMMYWWYMMYWWYMMIm.....',
+  '........ImMMMMMMMMMMMMMMIm.....',
+  '........ImMMYYYYMMYYYYMMIm.....',
+  '........ImMMYWWYMMYWWYMMIm.....',
+  '........ImMMMMMMMMMMMMMMIm.....',
+  '........ImMMYYYYMMPPPMMMIm.....',
+  '........ImMMYYYYMMpYpMMMIm.....',
+  '........ImMMMMMMMMpYpMMMIm.....',
+  '........ImMMMMMMMMPPMMMMIm.....',
+  '........ImmmmmmmmmmmmmmmmI.....',
+  '.........IIIIIIIIIIIIIIIII.....',
 ]
 
-const BOX = [
-  '....OOOOOO....',
-  '...OCCCCCCO...',
-  '..OCNNNNNNCO..',
-  '..OCNYYYYNCO..',
-  '..OCNYYYYNCO..',
-  '..OCNNNNNNCO..',
-  '...OCCCCCCO...',
-  '....OOOOOO....',
-  '......CC......',
-  '......CC......',
+const BOX_A = [
+  '....IOOOOOI.....',
+  '...IOCCCCCOI....',
+  '..IOCNNNNNCOI...',
+  '..IOCNYYYYNCOI..',
+  '..IOCNYYYYNCOI..',
+  '..IOCNNNNNCOI...',
+  '...IOCCCCCOI....',
+  '....IOOOOOI.....',
+  '......ICC.......',
+  '......ICC.......',
+  '................',
+  '................',
+]
+
+const BOX_B = [
+  '....IOOOOOI.....',
+  '...IOCCCCCOI....',
+  '..IOCNNNNNCOI...',
+  '..IOCNWWWWNCOI..',
+  '..IOCNYYYYNCOI..',
+  '..IOCNNNNNCOI...',
+  '...IOCCCCCOI....',
+  '....IOOOOOI.....',
+  '......ICC.......',
+  '......ICC.......',
+  '................',
+  '................',
 ]
 
 const CONE = [
-  '....OO....',
-  '...OWWO...',
-  '...OOOO...',
-  '..OWWWWO..',
-  '..OOOOOO..',
-  '.OWWWWWWO.',
-  '.OOOOOOOO.',
-  'WWWWWWWWWW',
+  '....IOOI....',
+  '...IOWWOI...',
+  '...IOOOOI...',
+  '..IOWWWWOI..',
+  '..IOOOOOOI..',
+  '.IOWWWWWWOI.',
+  '.IOOOOOOOOI.',
+  'IWWWWWWWWWWI',
 ]
 
-const WIRE = [
-  'C.............',
-  'CCC...........',
-  '..XXX.........',
-  '...XXXX.......',
-  '.....XXXX.....',
-  '.......XXXX...',
-  '.........XXX..',
-  '..........XXC.',
-  '...........CC.',
-  '............C.',
+const WIRE_A = [
+  'CI............',
+  'CCCI..........',
+  '..IXXI........',
+  '...IXXXXI.....',
+  '.....IXXXXI...',
+  '.......IXXXXI.',
+  '.........IXXI.',
+  '..........IXCI',
+  '...........CCI',
+  '............CI',
+]
+
+const WIRE_B = [
+  'CI............',
+  'CCCI..........',
+  '..IYYI........',
+  '...IYYYYI.....',
+  '.....IXXXXI...',
+  '.......IXXXXI.',
+  '.........IXXI.',
+  '..........IXCI',
+  '...........CCI',
+  '............CI',
+]
+
+const WIRE_C = [
+  'CI............',
+  'CCCI..........',
+  '..IXXI........',
+  '...IXXXXI.....',
+  '.....IYYYYI...',
+  '.......IWWWWI.',
+  '.........IYYI.',
+  '..........IXCI',
+  '...........CCI',
+  '............CI',
 ]
 
 const WINDOW = [
-  'CCCCCC',
-  'CYYYYC',
-  'CYYYYC',
-  'CYYYYC',
-  'CCCCCC',
+  'ICCCCI',
+  'IYYYYI',
+  'IYWWYI',
+  'IYYYYI',
+  'ICCCCI',
+]
+
+const DUST = [
+  '........',
+  '..IgI...',
+  '.IgggI..',
+  '.IEEEEI.',
+  '..IEEI..',
+  '...II...',
+  '........',
+  '........',
+]
+
+const DEBRIS = [
+  '....',
+  '.IOI',
+  '.IUI',
+  '....',
+]
+
+const SPARK = [
+  '....',
+  '.IYI',
+  '.IOI',
+  '....',
 ]
 
 function drawTileset(): HTMLCanvasElement {
   const size = 32
   const { el, ctx } = canvas(size * 7, size)
 
-  // 0 empty
-  // 1 ground
-  rect(ctx, size, 0, size, 8, PAL.G)
-  rect(ctx, size, 8, size, 4, PAL.O)
-  rect(ctx, size, 12, size, 20, PAL.A)
-  for (let i = 0; i < 8; i += 1) {
-    rect(ctx, size + 4 + i * 4, 2, 2, 2, PAL.g)
+  // 1 ground — cracked asphalt, hazard stripe, SNK dirt
+  rect(ctx, size, 0, size, 7, PAL.G)
+  rect(ctx, size, 7, size, 5, PAL.O)
+  rect(ctx, size, 9, size, 2, PAL.I)
+  rect(ctx, size, 12, size, 20, PAL.H)
+  for (let i = 0; i < 6; i += 1) {
+    rect(ctx, size + 3 + i * 5, 2, 2, 2, PAL.g)
   }
+  rect(ctx, size + 8, 16, 3, 2, PAL.A)
+  rect(ctx, size + 20, 22, 4, 2, PAL.T)
+  rect(ctx, size + 4, 26, 2, 2, PAL.A)
 
   // 2 fill
-  rect(ctx, size * 2, 0, size, size, PAL.A)
-  for (let i = 0; i < 6; i += 1) {
-    rect(ctx, size * 2 + (i % 3) * 10 + 2, 6 + Math.floor(i / 3) * 12, 6, 2, '#232C36')
+  rect(ctx, size * 2, 0, size, size, PAL.H)
+  for (let i = 0; i < 8; i += 1) {
+    rect(ctx, size * 2 + (i % 4) * 8 + 2, 4 + Math.floor(i / 4) * 14, 5, 2, PAL.T)
   }
 
-  // 3 brick
-  rect(ctx, size * 3, 0, size, size, PAL.M)
+  // 3 brick — war-stained, grouted
+  rect(ctx, size * 3, 0, size, size, PAL.I)
   for (let row = 0; row < 4; row += 1) {
-    const offset = row % 2 === 0 ? 0 : 8
+    const offset = row % 2 === 0 ? 1 : 9
     for (let col = 0; col < 3; col += 1) {
-      rect(ctx, size * 3 + offset + col * 12, row * 8 + 1, 10, 6, PAL.m)
+      const stain = (row + col) % 3 === 0 ? PAL.U : PAL.m
+      rect(ctx, size * 3 + offset + col * 12, row * 8 + 1, 10, 6, stain)
+      rect(ctx, size * 3 + offset + col * 12 + 1, row * 8 + 2, 3, 2, PAL.M)
     }
   }
 
-  // 4 roof
+  // 4 roof — corrugated metal, orange ridge
   rect(ctx, size * 4, 0, size, size, PAL.C)
   for (let i = 0; i < 4; i += 1) {
     rect(ctx, size * 4, i * 8, size, 3, PAL.N)
+    rect(ctx, size * 4, i * 8 + 3, size, 1, PAL.I)
   }
   rect(ctx, size * 4, 0, size, 4, PAL.O)
+  rect(ctx, size * 4, 4, size, 1, PAL.I)
 
-  // 5 platform
-  rect(ctx, size * 5, 0, size, 10, PAL.g)
-  rect(ctx, size * 5, 10, size, 6, PAL.C)
-  rect(ctx, size * 5 + 2, 2, size - 4, 4, PAL.N)
+  // 5 platform — riveted steel
+  rect(ctx, size * 5, 0, size, 11, PAL.g)
+  rect(ctx, size * 5, 11, size, 5, PAL.I)
+  rect(ctx, size * 5 + 2, 2, size - 4, 5, PAL.N)
+  rect(ctx, size * 5 + 4, 4, 3, 3, PAL.Y)
+  rect(ctx, size * 5 + 25, 4, 3, 3, PAL.Y)
+  rect(ctx, size * 5 + 14, 3, 4, 2, PAL.C)
 
-  // 6 crate
-  rect(ctx, size * 6, 4, size, 28, PAL.k)
+  // 6 crate — SNK wood with X and orange stamp
+  rect(ctx, size * 6, 3, size, 29, PAL.I)
+  rect(ctx, size * 6 + 2, 5, size - 4, 25, PAL.k)
   ctx.strokeStyle = PAL.K
   ctx.lineWidth = 2
-  ctx.strokeRect(size * 6 + 3, 7, size - 6, 22)
-  rect(ctx, size * 6 + 8, 14, 16, 4, PAL.O)
+  ctx.strokeRect(size * 6 + 5, 8, size - 10, 20)
+  ctx.beginPath()
+  ctx.moveTo(size * 6 + 7, 10)
+  ctx.lineTo(size * 6 + size - 7, 26)
+  ctx.moveTo(size * 6 + size - 7, 10)
+  ctx.lineTo(size * 6 + 7, 26)
+  ctx.stroke()
+  rect(ctx, size * 6 + 10, 14, 12, 5, PAL.O)
+  rect(ctx, size * 6 + 12, 15, 8, 3, PAL.I)
 
   return el
 }
@@ -373,13 +642,13 @@ function sheet(
 }
 
 const SKYLINE_WIDTH = 1280
-const SKYLINE_HEIGHT = 260
+const SKYLINE_HEIGHT = 280
 
 type NearBuilding = {
   x: number
   w: number
   h: number
-  kind: 'block' | 'tower' | 'step' | 'spire' | 'antenna' | 'wide' | 'factory'
+  kind: 'block' | 'tower' | 'step' | 'spire' | 'antenna' | 'wide' | 'factory' | 'crane' | 'tank'
   windowGapX: number
   windowGapY: number
   lit: number
@@ -428,19 +697,27 @@ function drawBuilding(
   ctx.fillStyle = body
   ctx.fillRect(building.x, top, building.w, building.h)
 
+  ctx.fillStyle = '#07080A'
+  ctx.fillRect(building.x, top, building.w, 2)
+
   if (building.kind === 'step') {
     const stepW = Math.floor(building.w * 0.58)
     const stepH = 22
+    ctx.fillStyle = body
     ctx.fillRect(building.x + Math.floor((building.w - stepW) / 2), top - stepH, stepW, stepH)
   }
 
   if (building.kind === 'tower' || building.kind === 'antenna') {
+    ctx.fillStyle = body
     ctx.fillRect(building.x + Math.floor(building.w / 2) - 1, top - 26, 3, 26)
     ctx.fillRect(building.x + Math.floor(building.w / 2) - 6, top - 22, 12, 3)
+    ctx.fillStyle = PAL.O
+    ctx.fillRect(building.x + Math.floor(building.w / 2) - 2, top - 28, 5, 4)
   }
 
   if (building.kind === 'spire') {
     const mid = building.x + Math.floor(building.w / 2)
+    ctx.fillStyle = body
     ctx.beginPath()
     ctx.moveTo(building.x + 6, top)
     ctx.lineTo(mid, top - 34)
@@ -450,9 +727,31 @@ function drawBuilding(
   }
 
   if (building.kind === 'factory') {
+    ctx.fillStyle = body
     ctx.fillRect(building.x + 10, top - 28, 10, 28)
     ctx.fillRect(building.x + 28, top - 18, 8, 18)
     ctx.fillRect(building.x + building.w - 22, top - 36, 12, 36)
+    ctx.fillStyle = '#6E7684'
+    ctx.fillRect(building.x + 11, top - 40, 8, 12)
+    ctx.fillStyle = 'rgba(244,247,250,0.35)'
+    ctx.fillRect(building.x + 8, top - 52, 14, 8)
+  }
+
+  if (building.kind === 'crane') {
+    ctx.fillStyle = PAL.O
+    ctx.fillRect(building.x + 8, top - 48, 6, 48)
+    ctx.fillRect(building.x + 8, top - 48, 54, 5)
+    ctx.fillStyle = PAL.I
+    ctx.fillRect(building.x + 56, top - 44, 3, 18)
+    ctx.fillStyle = PAL.Y
+    ctx.fillRect(building.x + 54, top - 26, 7, 6)
+  }
+
+  if (building.kind === 'tank') {
+    ctx.fillStyle = PAL.g
+    ctx.fillRect(building.x + 6, top - 18, building.w - 12, 18)
+    ctx.fillStyle = PAL.O
+    ctx.fillRect(building.x + Math.floor(building.w / 2) - 2, top - 26, 4, 8)
   }
 
   drawWindows(
@@ -472,11 +771,17 @@ function drawBuilding(
 function skyTexture(): HTMLCanvasElement {
   const { el, ctx } = canvas(160, 90)
   const gradient = ctx.createLinearGradient(0, 0, 0, 90)
-  gradient.addColorStop(0, '#0049FC')
-  gradient.addColorStop(0.55, '#3E7CFF')
-  gradient.addColorStop(1, '#CBE9F2')
+  gradient.addColorStop(0, '#1A4DFF')
+  gradient.addColorStop(0.42, '#4E8CFF')
+  gradient.addColorStop(0.72, '#A8CFFF')
+  gradient.addColorStop(1, '#F0C878')
   ctx.fillStyle = gradient
   ctx.fillRect(0, 0, 160, 90)
+  ctx.fillStyle = 'rgba(244,247,250,0.55)'
+  ctx.fillRect(18, 10, 22, 6)
+  ctx.fillRect(28, 8, 14, 5)
+  ctx.fillRect(96, 16, 28, 7)
+  ctx.fillRect(108, 14, 16, 5)
   return el
 }
 
@@ -504,7 +809,7 @@ function skylineTexture(): HTMLCanvasElement {
     [1190, 90, 50],
   ] as const
 
-  ctx.fillStyle = '#3A6280'
+  ctx.fillStyle = '#3A5A72'
   for (const [x, w, h] of far) {
     ctx.fillRect(x, height - h, w, h)
   }
@@ -512,9 +817,9 @@ function skylineTexture(): HTMLCanvasElement {
   const near: NearBuilding[] = [
     { x: -4, w: 86, h: 58, kind: 'wide', windowGapX: 14, windowGapY: 16, lit: 0.35 },
     { x: 78, w: 48, h: 86, kind: 'block', windowGapX: 11, windowGapY: 13, lit: 0.45 },
-    { x: 124, w: 70, h: 48, kind: 'wide', windowGapX: 16, windowGapY: 18, lit: 0.28 },
+    { x: 124, w: 70, h: 48, kind: 'tank', windowGapX: 16, windowGapY: 18, lit: 0.2 },
     { x: 190, w: 32, h: 118, kind: 'step', windowGapX: 10, windowGapY: 12, lit: 0.5 },
-    { x: 220, w: 92, h: 64, kind: 'block', windowGapX: 13, windowGapY: 15, lit: 0.32 },
+    { x: 220, w: 92, h: 64, kind: 'crane', windowGapX: 13, windowGapY: 15, lit: 0.32 },
     { x: 408, w: 58, h: 128, kind: 'block', windowGapX: 10, windowGapY: 11, lit: 0.7 },
     { x: 462, w: 36, h: 236, kind: 'antenna', windowGapX: 8, windowGapY: 9, lit: 0.92 },
     { x: 496, w: 88, h: 96, kind: 'step', windowGapX: 11, windowGapY: 12, lit: 0.62 },
@@ -524,8 +829,8 @@ function skylineTexture(): HTMLCanvasElement {
     { x: 880, w: 120, h: 54, kind: 'factory', windowGapX: 18, windowGapY: 16, lit: 0.22 },
     { x: 996, w: 64, h: 72, kind: 'factory', windowGapX: 15, windowGapY: 14, lit: 0.18 },
     { x: 1056, w: 40, h: 110, kind: 'antenna', windowGapX: 9, windowGapY: 12, lit: 0.4 },
-    { x: 1094, w: 98, h: 48, kind: 'wide', windowGapX: 16, windowGapY: 18, lit: 0.2 },
-    { x: 1188, w: 96, h: 66, kind: 'factory', windowGapX: 14, windowGapY: 15, lit: 0.25 },
+    { x: 1094, w: 98, h: 48, kind: 'tank', windowGapX: 16, windowGapY: 18, lit: 0.2 },
+    { x: 1188, w: 96, h: 66, kind: 'crane', windowGapX: 14, windowGapY: 15, lit: 0.25 },
   ]
 
   for (const building of near) {
@@ -533,13 +838,9 @@ function skylineTexture(): HTMLCanvasElement {
   }
 
   ctx.fillStyle = '#0B2838'
-  ctx.fillRect(0, height - 12, width, 12)
-  return el
-}
-
-function particle(): HTMLCanvasElement {
-  const { el, ctx } = canvas(8, 8)
-  rect(ctx, 2, 2, 4, 4, PAL.O)
+  ctx.fillRect(0, height - 14, width, 14)
+  ctx.fillStyle = PAL.O
+  ctx.fillRect(0, height - 16, width, 2)
   return el
 }
 
@@ -547,36 +848,92 @@ function heart(): HTMLCanvasElement {
   const { el, ctx } = canvas(16, 16)
   blit(
     ctx,
-    ['..X.X..', '.XXXXX.', '.XXXXX.', '..XXX..', '...X...'],
+    [
+      '.IX.XI.',
+      'IXXXXXI',
+      'IXXXXXI',
+      '.IXXXI.',
+      '..IXI..',
+      '...I...',
+    ],
     PAL,
     2,
     1,
-    2,
+    1,
   )
   return el
 }
 
+function assertWide(frames: readonly (readonly string[])[], label: string): void {
+  const width = frames[0]?.[0]?.length
+  const height = frames[0]?.length
+  for (const frame of frames) {
+    if (frame.length !== height) {
+      throw new Error(`${label}: height ${frame.length} != ${height}`)
+    }
+    for (const row of frame) {
+      if (row.length !== width) {
+        throw new Error(`${label}: row width ${row.length} != ${width} (${row})`)
+      }
+    }
+  }
+}
+
 export function createGeneratedCanvases(): Record<string, HTMLCanvasElement> {
+  const playerFrames = [
+    playerFrame(LEGS_IDLE, 0),
+    playerFrame(LEGS_IDLE_B, 0),
+    playerFrame(LEGS_WALK[0] ?? LEGS_IDLE, 1),
+    playerFrame(LEGS_WALK[1] ?? LEGS_IDLE, 1),
+    playerFrame(LEGS_WALK[2] ?? LEGS_IDLE, 0),
+    playerFrame(LEGS_WALK[3] ?? LEGS_IDLE, 1),
+    playerFrame(LEGS_WALK[4] ?? LEGS_IDLE, 1),
+    playerFrame(LEGS_WALK[5] ?? LEGS_IDLE, 0),
+    playerFrame(LEGS_JUMP, 0),
+    playerFrame(LEGS_FALL, 0),
+    PLAYER_HURT,
+    PLAYER_INSTALL_A,
+    PLAYER_INSTALL_B,
+  ]
+  assertWide(playerFrames, 'player')
+  assertWide(DOG_FRAMES, 'dog')
+  assertWide([CABLE_A, CABLE_B], 'cable')
+  assertWide([WIRE_A, WIRE_B, WIRE_C], 'wire')
+  assertWide([BOX_A, BOX_B], 'box')
+
   return {
     tiles: drawTileset(),
-    player: sheet(
-      [PLAYER_IDLE, PLAYER_WALK_A, PLAYER_WALK_B, PLAYER_WALK_C, PLAYER_JUMP, PLAYER_FALL, PLAYER_INSTALL],
-      3,
-    ),
-    dog: sheet([DOG_A, DOG_B], 3),
-    cable: sheet([CABLE], 3),
+    player: sheet(playerFrames, 3),
+    dog: sheet(DOG_FRAMES, 3),
+    cable: sheet([CABLE_A, CABLE_B], 3),
     van: sheet([VAN], 3),
     house: sheet([HOUSE], 3),
-    box: sheet([BOX], 3),
+    box: sheet([BOX_A, BOX_B], 3),
     cone: sheet([CONE], 3),
-    wire: sheet([WIRE], 3),
+    wire: sheet([WIRE_A, WIRE_B, WIRE_C], 3),
     window: sheet([WINDOW], 3),
     sky: skyTexture(),
     skyline: skylineTexture(),
-    spark: particle(),
+    spark: sheet([SPARK], 3),
+    dust: sheet([DUST], 3),
+    debris: sheet([DEBRIS], 3),
     heart: heart(),
   }
 }
 
 export const PLAYER_FRAME = { width: 48, height: 72 }
-export const DOG_FRAME = { width: 48, height: 24 }
+export const DOG_FRAME = { width: 48, height: 30 }
+export const CABLE_FRAME = { width: 42, height: 36 }
+export const WIRE_FRAME = { width: 42, height: 30 }
+export const BOX_FRAME = { width: 48, height: 36 }
+
+export const PLAYER_ANIMS = {
+  idleEnd: 1,
+  walkStart: 2,
+  walkEnd: 7,
+  jump: 8,
+  fall: 9,
+  hurt: 10,
+  installStart: 11,
+  installEnd: 12,
+} as const

@@ -11,44 +11,57 @@ export class AudioSystem {
     void this.ctx.resume()
   }
 
-  private tone(freq: number, duration: number, type: OscillatorType, gain = 0.05): void {
+  private tone(freq: number, duration: number, type: OscillatorType, gain = 0.05, delay = 0): void {
     if (this.muted || !this.ctx || this.ctx.state !== 'running') return
     const osc = this.ctx.createOscillator()
     const amp = this.ctx.createGain()
+    const start = this.ctx.currentTime + delay
     osc.type = type
     osc.frequency.value = freq
-    amp.gain.value = gain
-    amp.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration)
+    amp.gain.setValueAtTime(gain, start)
+    amp.gain.exponentialRampToValueAtTime(0.001, start + duration)
     osc.connect(amp)
     amp.connect(this.ctx.destination)
-    osc.start()
-    osc.stop(this.ctx.currentTime + duration)
+    osc.start(start)
+    osc.stop(start + duration)
+  }
+
+  private thud(freq: number, duration: number, gain = 0.06): void {
+    this.tone(freq, duration, 'square', gain)
+    this.tone(freq * 0.5, duration + 0.04, 'sawtooth', gain * 0.6)
   }
 
   jump(): void {
-    this.tone(420, 0.12, 'square', 0.04)
+    this.tone(380, 0.08, 'square', 0.035)
+    this.tone(520, 0.1, 'square', 0.03, 0.04)
   }
 
   collect(): void {
-    this.tone(740, 0.08, 'triangle', 0.05)
-    this.tone(980, 0.12, 'triangle', 0.04)
+    this.tone(620, 0.06, 'square', 0.045)
+    this.tone(880, 0.08, 'square', 0.04, 0.05)
+    this.tone(1240, 0.12, 'triangle', 0.035, 0.1)
   }
 
   hurt(): void {
-    this.tone(160, 0.18, 'sawtooth', 0.05)
+    this.thud(140, 0.22, 0.07)
+    this.tone(90, 0.28, 'sawtooth', 0.04)
   }
 
   land(): void {
-    this.tone(120, 0.06, 'sine', 0.03)
+    this.thud(110, 0.08, 0.045)
   }
 
   win(): void {
-    this.tone(520, 0.12, 'triangle', 0.05)
-    this.tone(780, 0.2, 'triangle', 0.05)
+    this.tone(392, 0.12, 'square', 0.05)
+    this.tone(523, 0.14, 'square', 0.05, 0.11)
+    this.tone(659, 0.16, 'square', 0.05, 0.22)
+    this.tone(784, 0.28, 'triangle', 0.055, 0.34)
   }
 
   install(): void {
-    this.tone(240, 0.3, 'square', 0.03)
+    this.thud(180, 0.18, 0.04)
+    this.tone(240, 0.35, 'square', 0.03, 0.08)
+    this.tone(360, 0.4, 'square', 0.025, 0.2)
   }
 }
 

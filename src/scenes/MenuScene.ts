@@ -3,6 +3,8 @@ import { GAME_HEIGHT, GAME_WIDTH, SceneKey } from '../config/constants.ts'
 import { copy, theme } from '../config/theme.ts'
 import { audio } from '../systems/AudioSystem.ts'
 
+const FONT = 'ui-sans-serif, system-ui, sans-serif'
+
 function addButton(
   scene: Phaser.Scene,
   x: number,
@@ -10,13 +12,16 @@ function addButton(
   label: string,
   onClick: () => void,
 ): void {
-  const bg = scene.add.rectangle(x, y, 280, 64, theme.orange, 1).setInteractive({ useHandCursor: true })
+  const shadow = scene.add.rectangle(x, y + 6, 300, 68, theme.ink, 1)
+  const bg = scene.add.rectangle(x, y, 300, 68, theme.orange, 1).setInteractive({ useHandCursor: true })
   const text = scene.add
     .text(x, y, label, {
-      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+      fontFamily: FONT,
       fontSize: '28px',
-      fontStyle: '800',
+      fontStyle: '900',
       color: '#ffffff',
+      stroke: theme.inkHex,
+      strokeThickness: 4,
     })
     .setOrigin(0.5)
 
@@ -29,6 +34,7 @@ function addButton(
   text.setInteractive({ useHandCursor: true }).on('pointerdown', activate)
   bg.on('pointerover', () => bg.setFillStyle(theme.sky))
   bg.on('pointerout', () => bg.setFillStyle(theme.orange))
+  void shadow
 }
 
 export class MenuScene extends Phaser.Scene {
@@ -40,34 +46,57 @@ export class MenuScene extends Phaser.Scene {
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky').setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT + 4, 'skyline').setOrigin(0.5, 1).setAlpha(0.96)
 
-    this.add.image(210, 520, 'van').setScale(2)
-    const preview = this.add.sprite(360, 488, 'player', 0).setScale(1.5)
+    this.add.rectangle(GAME_WIDTH / 2, 196, 620, 6, theme.orange, 1)
+    this.add.rectangle(GAME_WIDTH / 2, 258, 420, 4, theme.navy, 0.7)
+
+    this.add.image(200, 528, 'van').setScale(2.1)
+    const preview = this.add.sprite(360, 500, 'player', 0).setScale(1.65)
     preview.play('player-walk')
+    this.add.image(318, 548, 'dust').setScale(1.2).setAlpha(0.8)
+    this.add.image(392, 548, 'dust').setScale(0.9).setAlpha(0.55)
 
     this.add
-      .text(GAME_WIDTH / 2, 150, copy.title, {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '96px',
+      .text(GAME_WIDTH / 2, 118, copy.mission, {
+        fontFamily: FONT,
+        fontSize: '18px',
+        fontStyle: '800',
+        color: theme.orangeHex,
+        stroke: theme.inkHex,
+        strokeThickness: 4,
+        letterSpacing: 8,
+      })
+      .setOrigin(0.5)
+
+    this.add
+      .text(GAME_WIDTH / 2, 186, copy.title, {
+        fontFamily: FONT,
+        fontSize: '104px',
         fontStyle: '900',
         color: '#ffffff',
         stroke: theme.navyHex,
-        strokeThickness: 10,
+        strokeThickness: 12,
       })
       .setOrigin(0.5)
 
     this.add
-      .text(GAME_WIDTH / 2, 240, copy.tagline, {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '28px',
+      .text(GAME_WIDTH / 2, 268, copy.tagline, {
+        fontFamily: FONT,
+        fontSize: '26px',
+        fontStyle: '700',
         color: theme.fogHex,
+        stroke: theme.inkHex,
+        strokeThickness: 3,
       })
       .setOrigin(0.5)
 
     this.add
-      .text(GAME_WIDTH / 2, 310, copy.how, {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '22px',
+      .text(GAME_WIDTH / 2, 318, copy.how, {
+        fontFamily: FONT,
+        fontSize: '20px',
+        fontStyle: '700',
         color: '#ffffff',
+        stroke: theme.inkHex,
+        strokeThickness: 3,
       })
       .setOrigin(0.5)
 
@@ -86,14 +115,14 @@ export class MenuScene extends Phaser.Scene {
 
     this.add
       .text(GAME_WIDTH / 2, 680, 'Celular: pad táctil  ·  Desktop: flechas / WASD + espacio', {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+        fontFamily: FONT,
         fontSize: '18px',
         color: theme.fogHex,
       })
       .setOrigin(0.5)
 
-    this.add.image(980, 500, 'house').setScale(2)
-    this.add.image(860, 545, 'box').setScale(1.4)
-    this.add.image(820, 528, 'cable').setScale(1.2)
+    this.add.image(1000, 500, 'house').setScale(2.15)
+    this.add.sprite(860, 548, 'box', 0).play('box-blink').setScale(1.5)
+    this.add.sprite(810, 528, 'cable', 0).play('cable-spin').setScale(1.25)
   }
 }

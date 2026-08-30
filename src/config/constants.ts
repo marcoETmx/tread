@@ -25,6 +25,19 @@ export const INSTALL = {
 
 export const LIVES_START = 3
 
+/** Screen juice — no combat, just Metal Slug-style feedback. */
+export const JUICE = {
+  hurtStunMs: 420,
+  deathHoldMs: 780,
+  shakeHurtMs: 300,
+  shakeHurtIntensity: 0.014,
+  shakeLandMs: 70,
+  shakeLandIntensity: 0.003,
+  dustRunMs: 72,
+  knockbackX: 160,
+  knockbackY: -140,
+} as const
+
 export const SceneKey = {
   Boot: 'BootScene',
   Preload: 'PreloadScene',
