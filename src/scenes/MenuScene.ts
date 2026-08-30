@@ -3,6 +3,8 @@ import { GAME_HEIGHT, GAME_WIDTH, SceneKey } from '../config/constants.ts'
 import { copy, theme } from '../config/theme.ts'
 import { audio } from '../systems/AudioSystem.ts'
 
+const FONT = 'ui-sans-serif, system-ui, sans-serif'
+
 function addButton(
   scene: Phaser.Scene,
   x: number,
@@ -10,13 +12,16 @@ function addButton(
   label: string,
   onClick: () => void,
 ): void {
-  const bg = scene.add.rectangle(x, y, 280, 64, theme.orange, 1).setInteractive({ useHandCursor: true })
+  const shadow = scene.add.rectangle(x, y + 6, 300, 68, theme.ink, 1)
+  const bg = scene.add.rectangle(x, y, 300, 68, theme.orange, 1).setInteractive({ useHandCursor: true })
   const text = scene.add
     .text(x, y, label, {
-      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+      fontFamily: FONT,
       fontSize: '28px',
-      fontStyle: '800',
+      fontStyle: '900',
       color: '#ffffff',
+      stroke: theme.inkHex,
+      strokeThickness: 4,
     })
     .setOrigin(0.5)
 
@@ -29,6 +34,7 @@ function addButton(
   text.setInteractive({ useHandCursor: true }).on('pointerdown', activate)
   bg.on('pointerover', () => bg.setFillStyle(theme.sky))
   bg.on('pointerout', () => bg.setFillStyle(theme.orange))
+  void shadow
 }
 
 export class MenuScene extends Phaser.Scene {
@@ -40,37 +46,60 @@ export class MenuScene extends Phaser.Scene {
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky').setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT + 4, 'skyline').setOrigin(0.5, 1).setAlpha(0.96)
 
+    this.add.rectangle(GAME_WIDTH / 2, 196, 620, 6, theme.orange, 1)
+    this.add.rectangle(GAME_WIDTH / 2, 258, 420, 4, theme.navy, 0.7)
+
     const streetY = 575
-    this.add.image(210, streetY, 'van').setOrigin(0.5, 1).setScale(1.7)
-    const preview = this.add.sprite(400, streetY, 'player', 0).setOrigin(0.5, 1).setScale(1.6)
+    this.add.image(168, streetY, 'van').setOrigin(0.5, 1).setScale(1.7)
+    const preview = this.add.sprite(338, streetY, 'player', 0).setOrigin(0.5, 1).setScale(1.7)
     preview.play('player-walk')
-    const dogPreview = this.add.sprite(490, streetY, 'dog', 0).setOrigin(0.5, 1).setScale(1.5)
+    const dogPreview = this.add.sprite(430, streetY, 'dog', 0).setOrigin(0.5, 1).setScale(1.5)
     dogPreview.play('dog-run')
+    this.add.image(292, streetY, 'dust').setOrigin(0.5, 1).setScale(1.4).setAlpha(0.8)
+    this.add.image(376, streetY, 'dust').setOrigin(0.5, 1).setScale(1.05).setAlpha(0.55)
 
     this.add
-      .text(GAME_WIDTH / 2, 150, copy.title, {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '96px',
+      .text(GAME_WIDTH / 2, 118, copy.mission, {
+        fontFamily: FONT,
+        fontSize: '18px',
+        fontStyle: '800',
+        color: theme.orangeHex,
+        stroke: theme.inkHex,
+        strokeThickness: 4,
+        letterSpacing: 8,
+      })
+      .setOrigin(0.5)
+
+    this.add
+      .text(GAME_WIDTH / 2, 186, copy.title, {
+        fontFamily: FONT,
+        fontSize: '104px',
         fontStyle: '900',
         color: '#ffffff',
         stroke: theme.navyHex,
-        strokeThickness: 10,
+        strokeThickness: 12,
       })
       .setOrigin(0.5)
 
     this.add
-      .text(GAME_WIDTH / 2, 240, copy.tagline, {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '28px',
+      .text(GAME_WIDTH / 2, 268, copy.tagline, {
+        fontFamily: FONT,
+        fontSize: '26px',
+        fontStyle: '700',
         color: theme.fogHex,
+        stroke: theme.inkHex,
+        strokeThickness: 3,
       })
       .setOrigin(0.5)
 
     this.add
-      .text(GAME_WIDTH / 2, 310, copy.how, {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '22px',
+      .text(GAME_WIDTH / 2, 318, copy.how, {
+        fontFamily: FONT,
+        fontSize: '20px',
+        fontStyle: '700',
         color: '#ffffff',
+        stroke: theme.inkHex,
+        strokeThickness: 3,
       })
       .setOrigin(0.5)
 
@@ -89,14 +118,14 @@ export class MenuScene extends Phaser.Scene {
 
     this.add
       .text(GAME_WIDTH / 2, 680, 'Celular: pad táctil  ·  Desktop: flechas / WASD + espacio', {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+        fontFamily: FONT,
         fontSize: '18px',
         color: theme.fogHex,
       })
       .setOrigin(0.5)
 
-    this.add.image(980, streetY, 'house').setOrigin(0.5, 1).setScale(2)
-    this.add.image(860, streetY, 'box').setOrigin(0.5, 1).setScale(1.4)
-    this.add.image(820, streetY - 6, 'cable').setOrigin(0.5, 1).setScale(1.2)
+    this.add.image(1020, streetY, 'house').setOrigin(0.5, 1).setScale(2.2)
+    this.add.sprite(860, streetY, 'box', 0).setOrigin(0.5, 1).play('box-blink').setScale(1.4)
+    this.add.sprite(800, streetY - 4, 'cable', 0).setOrigin(0.5, 1).play('cable-spin').setScale(1.25)
   }
 }

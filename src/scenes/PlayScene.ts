@@ -1,8 +1,11 @@
 import Phaser from 'phaser'
 import {
+  CAMERA,
+  CAMERA_ZOOM,
   GAME_HEIGHT,
   GAME_WIDTH,
   INSTALL,
+  JUICE,
   LIVES_START,
   RegistryKey,
   SceneKey,
@@ -15,6 +18,7 @@ import { countCables, createLevel1 } from '../levels/level1.ts'
 import { TileId } from '../levels/types.ts'
 import { audio } from '../systems/AudioSystem.ts'
 import { InputSystem } from '../systems/InputSystem.ts'
+import { floatScore, spawnDebris, spawnPickupBurst, spawnSparks } from '../systems/VfxSystem.ts'
 
 function tileSurfaceY(tiles: number[][], x: number, fromY: number): number {
   const tileX = Math.floor(x / TILE_SIZE)
@@ -48,6 +52,9 @@ export class PlayScene extends Phaser.Scene {
   private ended = false
   private hintUntil = 0
   private collectReady = false
+  private sky!: Phaser.GameObjects.Image
+  private skyline!: Phaser.GameObjects.Image
+  private lookAheadX = CAMERA.offsetXRight
 
   constructor() {
     super(SceneKey.Play)
@@ -65,11 +72,13 @@ export class PlayScene extends Phaser.Scene {
     const worldW = (level.tiles[0]?.length ?? 0) * TILE_SIZE
     const worldH = level.tiles.length * TILE_SIZE
 
-    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky').setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setScrollFactor(0).setDepth(-20)
-    this.add
+    this.sky = this.add
+      .image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky')
+      .setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
+      .setDepth(-20)
+    this.skyline = this.add
       .image(GAME_WIDTH / 2, GAME_HEIGHT + 4, 'skyline')
       .setOrigin(0.5, 1)
-      .setScrollFactor(0)
       .setDepth(-10)
       .setAlpha(0.96)
 
@@ -94,7 +103,7 @@ export class PlayScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, 0, worldW, worldH)
     this.cameras.main.setBounds(0, 0, worldW, worldH)
-    this.cameras.main.setZoom(1)
+    this.cameras.main.setZoom(CAMERA_ZOOM)
     this.cameras.main.setBackgroundColor(theme.navy)
 
     this.registry.set(RegistryKey.cables, 0)
@@ -110,7 +119,10 @@ export class PlayScene extends Phaser.Scene {
     this.checkpointY = spawn?.y ?? 400
     this.player = new Player(this, this.checkpointX, this.checkpointY)
     this.physics.add.collider(this.player.sprite, layer)
-    this.cameras.main.startFollow(this.player.sprite, true, 0.14, 0.14)
+    this.cameras.main.startFollow(this.player.sprite, true, 0.18, 0.16)
+    this.lookAheadX = CAMERA.offsetXRight
+    this.cameras.main.setFollowOffset(this.lookAheadX, CAMERA.offsetY)
+    this.pinBackdrop()
     this.scale.on(Phaser.Scale.Events.RESIZE, this.lockCameraZoom, this)
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.scale.off(Phaser.Scale.Events.RESIZE, this.lockCameraZoom, this)
@@ -124,56 +136,56 @@ export class PlayScene extends Phaser.Scene {
       const feetY = tileSurfaceY(level.tiles, object.x, object.y)
       switch (object.type) {
         case 'van':
-          plant(this, object.x, feetY + 6, 'van', 1.55, 6)
+          plant(this, object.x, feetY + 6, 'van', 1.45, 6)
           break
         case 'house':
           plant(this, object.x, feetY + 4, 'house', 2.2, 4)
           break
         case 'cone':
-          plant(this, object.x, feetY + 4, 'cone', 1, 5)
+          plant(this, object.x, feetY + 4, 'cone', 1.15, 5)
           break
         case 'window':
-          this.add.image(object.x, object.y, 'window').setDepth(3)
+          this.add.image(object.x, object.y, 'window').setScale(1.35).setDepth(3)
           break
         case 'cable': {
-          const coil = this.physics.add.staticImage(object.x, feetY - 2, 'cable')
+          const coil = this.physics.add.staticSprite(object.x, feetY - 2, 'cable')
           coil.setOrigin(0.5, 1)
           coil.setPosition(object.x, feetY - 2)
           coil.refreshBody()
           coil.setDepth(9)
+          coil.setScale(1.12)
+          coil.play('cable-spin')
           cables.add(coil)
-          this.tweens.add({
-            targets: coil,
-            scale: 1.08,
-            duration: 650,
-            yoyo: true,
-            repeat: -1,
-            ease: 'sine.inOut',
-          })
           break
         }
-        case 'wire':
-          hazards.create(object.x, object.y, 'wire').setDepth(7)
+        case 'wire': {
+          const live = hazards.create(object.x, object.y, 'wire') as Phaser.Physics.Arcade.Sprite
+          live.setDepth(7)
+          live.play('wire-spark')
           break
+        }
         case 'install': {
           const box = installBoxes.create(object.x, feetY, 'box') as Phaser.Physics.Arcade.Sprite
           box.setOrigin(0.5, 1)
           box.setPosition(object.x, feetY)
           box.refreshBody()
           box.setDepth(8)
+          box.play('box-blink')
           this.add
             .text(object.x, feetY - box.displayHeight - 16, 'INSTALAR', {
               fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-              fontSize: '14px',
+              fontSize: '18px',
               color: theme.orangeHex,
-              fontStyle: '700',
+              fontStyle: '900',
+              stroke: theme.inkHex,
+              strokeThickness: 5,
             })
             .setOrigin(0.5, 1)
             .setDepth(8)
           break
         }
         case 'dog': {
-          const dog = new PatrolDog(this, object.x, feetY - 22, object.minX ?? object.x - 80, object.maxX ?? object.x + 80)
+          const dog = new PatrolDog(this, object.x, feetY - 16, object.minX ?? object.x - 80, object.maxX ?? object.x + 80)
           this.dogs.push(dog)
           this.physics.add.collider(dog.sprite, layer)
           this.physics.add.overlap(this.player.sprite, dog.sprite, () => {
@@ -197,7 +209,8 @@ export class PlayScene extends Phaser.Scene {
       this.registry.set(RegistryKey.cables, collected)
       this.registry.set(RegistryKey.score, Number(this.registry.get(RegistryKey.score) ?? 0) + 100)
       audio.collect()
-      this.spawnSparks(sprite.x, sprite.y)
+      spawnPickupBurst(this, sprite.x, sprite.y)
+      floatScore(this, sprite.x, sprite.y - 12, '+100')
     })
 
     this.physics.add.overlap(this.player.sprite, hazards, () => {
@@ -228,6 +241,8 @@ export class PlayScene extends Phaser.Scene {
 
     const input = this.inputSystem.sample()
     this.player.update(input, delta)
+    this.updateCameraLook(delta)
+    this.pinBackdrop()
     for (const dog of this.dogs) dog.update()
 
     this.updateCheckpointFromPlayer()
@@ -238,7 +253,25 @@ export class PlayScene extends Phaser.Scene {
   }
 
   private lockCameraZoom = (): void => {
-    this.cameras.main.setZoom(1)
+    this.cameras.main.setZoom(CAMERA_ZOOM)
+    this.pinBackdrop()
+  }
+
+  private updateCameraLook(delta: number): void {
+    const target = this.player.sprite.flipX ? CAMERA.offsetXLeft : CAMERA.offsetXRight
+    this.lookAheadX += (target - this.lookAheadX) * Math.min(1, delta * CAMERA.lookLerp)
+    this.cameras.main.setFollowOffset(this.lookAheadX, CAMERA.offsetY)
+    this.cameras.main.setZoom(CAMERA_ZOOM)
+  }
+
+  private pinBackdrop(): void {
+    const view = this.cameras.main.worldView
+    const width = Math.ceil(view.width) + 10
+    const height = Math.ceil(view.height) + 10
+    this.sky.setPosition(view.centerX, view.centerY)
+    this.sky.setDisplaySize(width, height)
+    this.skyline.setPosition(view.centerX, view.bottom + 2)
+    this.skyline.setDisplaySize(width + 8, Math.round(width * (300 / 1280) * 1.12))
   }
 
   private updateCheckpointFromPlayer(): void {
@@ -258,12 +291,18 @@ export class PlayScene extends Phaser.Scene {
     if (this.ended || this.player.isInstalling || this.player.isInvulnerable) return
     const lives = Number(this.registry.get(RegistryKey.lives) ?? 0) - 1
     this.registry.set(RegistryKey.lives, lives)
-    this.cameras.main.shake(160, 0.006)
+    this.cameras.main.shake(JUICE.shakeHurtMs, JUICE.shakeHurtIntensity)
+    spawnDebris(this, this.player.x, this.player.y)
+    this.player.beginHurt()
     if (lives <= 0) {
-      this.finish(false)
+      this.time.delayedCall(JUICE.deathHoldMs, () => this.finish(false))
       return
     }
-    this.player.respawn(this.checkpointX, this.checkpointY)
+    this.time.delayedCall(JUICE.hurtStunMs, () => {
+      if (this.ended) return
+      this.player.respawn(this.checkpointX, this.checkpointY)
+      spawnDebris(this, this.checkpointX, this.checkpointY)
+    })
   }
 
   private tryInstall(): void {
@@ -282,7 +321,15 @@ export class PlayScene extends Phaser.Scene {
 
     this.player.startInstall()
     audio.install()
-    this.spawnSparks(this.player.x, this.player.y)
+    spawnSparks(this, this.player.x, this.player.y, 16)
+    this.time.addEvent({
+      delay: 220,
+      repeat: 6,
+      callback: () => {
+        if (!this.player.isInstalling) return
+        spawnSparks(this, this.player.x, this.player.y - 10, 6)
+      },
+    })
     this.registry.set('hint', copy.installing)
     this.time.delayedCall(INSTALL.durationMs, () => {
       this.registry.set(RegistryKey.score, Number(this.registry.get(RegistryKey.score) ?? 0) + 500)
@@ -298,19 +345,5 @@ export class PlayScene extends Phaser.Scene {
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(won ? SceneKey.Win : SceneKey.Fail)
     })
-  }
-
-  private spawnSparks(x: number, y: number): void {
-    for (let i = 0; i < 8; i += 1) {
-      const spark = this.add.image(x, y, 'spark').setDepth(20)
-      this.tweens.add({
-        targets: spark,
-        x: x + Phaser.Math.Between(-40, 40),
-        y: y + Phaser.Math.Between(-50, 10),
-        alpha: 0,
-        duration: 350,
-        onComplete: () => spark.destroy(),
-      })
-    }
   }
 }

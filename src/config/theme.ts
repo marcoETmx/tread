@@ -24,12 +24,18 @@ export const theme = {
   brickDark: 0x33445c,
   window: 0xffd27a,
   danger: 0xff3b3b,
+  sand: 0xf0c878,
+  sandHex: '#F0C878',
+  rust: 0xb5522a,
+  ink: 0x07080a,
+  inkHex: '#07080A',
 } as const
 
 export const copy = {
   title: 'TREAD',
   tagline: 'Instala el servicio. Conecta la ciudad.',
   play: 'JUGAR',
+  mission: 'RUTA CENTRO',
   how: 'Junta 8 rollos de coaxial y llega a la última casa.',
   rotate: 'Gira el teléfono para jugar en horizontal',
   cables: 'Cable',

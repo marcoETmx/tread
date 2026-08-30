@@ -3,6 +3,19 @@ export const GAME_HEIGHT = 720
 
 export const TILE_SIZE = 32
 
+/** Play-scene camera only. HUD and the HTML touch pad stay at 1×. */
+export const CAMERA_ZOOM = 1.35
+
+export const CAMERA = {
+  /** Phaser 4: camera mid = player - offset. Negative X puts the player left of center. */
+  offsetXRight: -180,
+  /** Still left of center when facing left, with a bit more view behind. */
+  offsetXLeft: -56,
+  /** Positive Y puts the player slightly lower so more rooftops show above. */
+  offsetY: 28,
+  lookLerp: 0.006,
+} as const
+
 export const PLAYER = {
   speed: 260,
   airSpeed: 250,
@@ -24,6 +37,19 @@ export const INSTALL = {
 } as const
 
 export const LIVES_START = 3
+
+/** Screen juice — no combat, just Metal Slug-style feedback. */
+export const JUICE = {
+  hurtStunMs: 420,
+  deathHoldMs: 780,
+  shakeHurtMs: 300,
+  shakeHurtIntensity: 0.014,
+  shakeLandMs: 70,
+  shakeLandIntensity: 0.003,
+  dustRunMs: 72,
+  knockbackX: 160,
+  knockbackY: -140,
+} as const
 
 export const SceneKey = {
   Boot: 'BootScene',
