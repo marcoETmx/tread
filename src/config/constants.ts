@@ -7,12 +7,12 @@ export const TILE_SIZE = 32
 export const CAMERA_ZOOM = 1.35
 
 export const CAMERA = {
-  /** World pixels. Positive X puts the player left of center (look-ahead). */
-  offsetXRight: 180,
-  /** Still left of center when facing left. */
-  offsetXLeft: 52,
-  /** Negative Y shows more rooftops above the player. */
-  offsetY: -28,
+  /** Phaser 4: camera mid = player - offset. Negative X puts the player left of center. */
+  offsetXRight: -180,
+  /** Still left of center when facing left, with a bit more view behind. */
+  offsetXLeft: -56,
+  /** Positive Y puts the player slightly lower so more rooftops show above. */
+  offsetY: 28,
   lookLerp: 0.006,
 } as const
 
