@@ -46,11 +46,11 @@ export class PlayScene extends Phaser.Scene {
 
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky').setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setScrollFactor(0).setDepth(-20)
     this.skyline = this.add
-      .tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, 'skyline')
+      .tileSprite(0, GAME_HEIGHT - 168, GAME_WIDTH, 168, 'skyline')
       .setOrigin(0)
       .setScrollFactor(0)
       .setDepth(-10)
-      .setAlpha(0.9)
+      .setAlpha(0.95)
 
     const map = this.make.tilemap({
       data: level.tiles,

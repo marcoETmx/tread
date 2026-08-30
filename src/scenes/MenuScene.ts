@@ -78,6 +78,15 @@ export class MenuScene extends Phaser.Scene {
       this.scene.start(SceneKey.Play)
     })
 
+    this.input.keyboard?.on('keydown-ENTER', () => {
+      audio.resume()
+      this.scene.start(SceneKey.Play)
+    })
+    this.input.keyboard?.on('keydown-SPACE', () => {
+      audio.resume()
+      this.scene.start(SceneKey.Play)
+    })
+
     this.add
       .text(GAME_WIDTH / 2, 680, 'Celular: pad táctil  ·  Desktop: flechas / WASD + espacio', {
         fontFamily: 'ui-sans-serif, system-ui, sans-serif',

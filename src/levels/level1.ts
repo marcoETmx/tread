@@ -70,16 +70,16 @@ export function createLevel1(): LevelData {
 
   groundStrip(tiles, 0, WIDTH)
 
-  // Street pits. Mid ledges sit 2 tiles above the ground so a tap-jump lands them.
-  gap(tiles, 20, 25)
+  // First street hurdle is a low crate on solid ground so a missed hop
+  // does not dump you in a pit. The first real pit is the second gap.
   gap(tiles, 42, 48)
   gap(tiles, 72, 77)
   gap(tiles, 112, 118)
   gap(tiles, 162, 171)
 
-  platform(tiles, 21, 18, 3)
-  platform(tiles, 44, 18, 2, TileId.Crate)
-  platform(tiles, 73, 18, 3)
+  fillRect(tiles, 20, 19, 4, 1, TileId.Crate)
+  platform(tiles, 43, 18, 3, TileId.Crate)
+  platform(tiles, 72, 18, 5)
 
   fillRect(tiles, 30, 18, 2, 2, TileId.Crate)
   fillRect(tiles, 36, 19, 2, 1, TileId.Crate)
