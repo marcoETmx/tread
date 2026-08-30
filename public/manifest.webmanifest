@@ -1,0 +1,17 @@
+{
+  "name": "Tread",
+  "short_name": "Tread",
+  "description": "Instala el servicio recorriendo la ciudad",
+  "start_url": "/",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#051D2E",
+  "theme_color": "#0049FC",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "tread",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Tread — platformer de instalación urbana para celular en landscape",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc && vite build",
+    "preview": "vite preview --host --port 4173"
+  },
+  "dependencies": {
+    "phaser": "^4.2.1"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.2",
+    "vite": "^8.2.2"
+  }
+}
