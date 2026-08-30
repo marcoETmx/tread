@@ -11,6 +11,7 @@ const touch = {
   left: false,
   right: false,
   jump: false,
+  jumpQueued: false,
 }
 
 function bindHold(el: HTMLElement | null, key: 'left' | 'right' | 'jump'): void {
@@ -19,6 +20,7 @@ function bindHold(el: HTMLElement | null, key: 'left' | 'right' | 'jump'): void 
   const down = (event: Event) => {
     event.preventDefault()
     touch[key] = true
+    if (key === 'jump') touch.jumpQueued = true
     el.classList.add('is-down')
   }
   const up = (event: Event) => {
@@ -31,6 +33,7 @@ function bindHold(el: HTMLElement | null, key: 'left' | 'right' | 'jump'): void 
   el.addEventListener('pointerup', up)
   el.addEventListener('pointerleave', up)
   el.addEventListener('pointercancel', up)
+  el.addEventListener('contextmenu', (event) => event.preventDefault())
 }
 
 export function bindTouchControls(): void {
@@ -77,8 +80,9 @@ export class InputSystem {
       Boolean(this.cursors?.up.isDown) ||
       Boolean(this.wasd?.W.isDown) ||
       Boolean(this.wasd?.space.isDown)
-    const jumpPressed = jump && !this.jumpWasDown
-    this.jumpWasDown = jump
-    return { left, right, jump, jumpPressed }
+    const jumpPressed = (jump && !this.jumpWasDown) || touch.jumpQueued
+    touch.jumpQueued = false
+    this.jumpWasDown = jump || jumpPressed
+    return { left, right, jump: jump || jumpPressed, jumpPressed }
   }
 }

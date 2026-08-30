@@ -6,7 +6,7 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=resizes-visual"
     />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -15,7 +15,15 @@
     <title>Tread</title>
   </head>
   <body>
-    <div id="game-root"></div>
+    <div id="game-root">
+      <div id="touch-ui" aria-hidden="true">
+        <div class="cluster">
+          <button type="button" id="btn-left" data-dir="left" aria-label="Izquierda">◀</button>
+          <button type="button" id="btn-right" data-dir="right" aria-label="Derecha">▶</button>
+        </div>
+        <button type="button" id="btn-jump" aria-label="Saltar">SALTAR</button>
+      </div>
+    </div>
 
     <div id="rotate-overlay" hidden>
       <div class="rotate-card">
@@ -23,14 +31,6 @@
         <p>Gira el teléfono</p>
         <span>Tread se juega en horizontal</span>
       </div>
-    </div>
-
-    <div id="touch-ui" aria-hidden="true">
-      <div class="cluster">
-        <button type="button" id="btn-left" data-dir="left" aria-label="Izquierda">◀</button>
-        <button type="button" id="btn-right" data-dir="right" aria-label="Derecha">▶</button>
-      </div>
-      <button type="button" id="btn-jump" aria-label="Saltar">SALTAR</button>
     </div>
 
     <script type="module" src="/src/main.ts"></script>

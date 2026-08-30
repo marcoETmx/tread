@@ -22,6 +22,8 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
     parent: 'game-root',
+    fullscreenTarget: 'game-root',
+    expandParent: false,
   },
   physics: {
     default: 'arcade',

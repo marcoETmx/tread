@@ -22,15 +22,20 @@ body {
   font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
   touch-action: none;
   user-select: none;
+  position: fixed;
+  inset: 0;
+  overscroll-behavior: none;
 }
 
 #game-root {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 1;
   width: 100%;
   height: 100%;
+  overflow: hidden;
   background: var(--navy);
+  touch-action: none;
 }
 
 canvas {
@@ -39,6 +44,7 @@ canvas {
   z-index: 1;
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+  touch-action: none;
 }
 
 #rotate-overlay {
@@ -108,7 +114,7 @@ canvas {
 
 #touch-ui {
   display: none;
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   bottom: max(12px, env(safe-area-inset-bottom));
@@ -117,6 +123,7 @@ canvas {
   align-items: flex-end;
   justify-content: space-between;
   pointer-events: none;
+  touch-action: none;
 }
 
 #touch-ui button {
@@ -129,6 +136,9 @@ canvas {
   background: rgba(5, 29, 46, 0.72);
   border: 2px solid rgba(255, 116, 32, 0.85);
   box-shadow: 0 8px 0 rgba(0, 0, 0, 0.35);
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #touch-ui button:active,

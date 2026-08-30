@@ -73,8 +73,9 @@ export class PlayScene extends Phaser.Scene {
 
     this.physics.world.setBounds(0, 0, worldW, worldH)
     this.cameras.main.setBounds(0, 0, worldW, worldH)
-    this.cameras.main.setDeadzone(100, 80)
+    this.cameras.main.setZoom(1)
     this.cameras.main.setBackgroundColor(theme.navy)
+
 
     this.registry.set(RegistryKey.cables, 0)
     this.registry.set(RegistryKey.lives, LIVES_START)
@@ -90,6 +91,10 @@ export class PlayScene extends Phaser.Scene {
     this.player = new Player(this, this.checkpointX, this.checkpointY)
     this.physics.add.collider(this.player.sprite, layer)
     this.cameras.main.startFollow(this.player.sprite, true, 0.14, 0.14)
+    this.scale.on(Phaser.Scale.Events.RESIZE, this.lockCameraZoom, this)
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.scale.off(Phaser.Scale.Events.RESIZE, this.lockCameraZoom, this)
+    })
 
     const cables = this.physics.add.staticGroup()
     const hazards = this.physics.add.staticGroup()
@@ -204,15 +209,20 @@ export class PlayScene extends Phaser.Scene {
     }
   }
 
+  private lockCameraZoom = (): void => {
+    this.cameras.main.setZoom(1)
+  }
+
   private updateCheckpointFromPlayer(): void {
     const x = this.player.x
-    if (x > 80 * TILE_SIZE) {
-      this.checkpointX = 82 * TILE_SIZE
-      this.checkpointY = 14 * TILE_SIZE
+    const standY = 18 * TILE_SIZE + TILE_SIZE / 2
+    if (x > 48 * TILE_SIZE) {
+      this.checkpointX = 49 * TILE_SIZE + TILE_SIZE / 2
+      this.checkpointY = standY
     }
-    if (x > 148 * TILE_SIZE) {
-      this.checkpointX = 150 * TILE_SIZE
-      this.checkpointY = 18 * TILE_SIZE
+    if (x > 136 * TILE_SIZE) {
+      this.checkpointX = 152 * TILE_SIZE + TILE_SIZE / 2
+      this.checkpointY = standY
     }
   }
 

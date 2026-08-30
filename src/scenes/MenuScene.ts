@@ -22,7 +22,6 @@ function addButton(
 
   const activate = () => {
     audio.resume()
-    scene.scale.startFullscreen()
     onClick()
   }
 

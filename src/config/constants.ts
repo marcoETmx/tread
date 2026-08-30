@@ -5,13 +5,15 @@ export const TILE_SIZE = 32
 
 export const PLAYER = {
   speed: 260,
-  airSpeed: 230,
-  jumpVelocity: -560,
+  airSpeed: 250,
+  jumpVelocity: -660,
   gravity: 1600,
   maxFall: 980,
   coyoteMs: 110,
   jumpBufferMs: 130,
-  jumpCut: 0.45,
+  jumpCut: 0.5,
+  /** Taps shorter than this count as a full jump (mobile tap-to-jump). */
+  jumpTapMs: 200,
   invulnMs: 1200,
 } as const
 
