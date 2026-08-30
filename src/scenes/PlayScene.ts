@@ -20,7 +20,6 @@ export class PlayScene extends Phaser.Scene {
   private player!: Player
   private inputSystem!: InputSystem
   private dogs: PatrolDog[] = []
-  private skyline!: Phaser.GameObjects.TileSprite
   private elapsedMs = 0
   private checkpointX = 0
   private checkpointY = 0
@@ -45,12 +44,12 @@ export class PlayScene extends Phaser.Scene {
     const worldH = level.tiles.length * TILE_SIZE
 
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky').setDisplaySize(GAME_WIDTH, GAME_HEIGHT).setScrollFactor(0).setDepth(-20)
-    this.skyline = this.add
-      .tileSprite(0, GAME_HEIGHT - 168, GAME_WIDTH, 168, 'skyline')
-      .setOrigin(0)
+    this.add
+      .image(GAME_WIDTH / 2, GAME_HEIGHT + 4, 'skyline')
+      .setOrigin(0.5, 1)
       .setScrollFactor(0)
       .setDepth(-10)
-      .setAlpha(0.95)
+      .setAlpha(0.96)
 
     const map = this.make.tilemap({
       data: level.tiles,
@@ -75,7 +74,6 @@ export class PlayScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, worldW, worldH)
     this.cameras.main.setZoom(1)
     this.cameras.main.setBackgroundColor(theme.navy)
-
 
     this.registry.set(RegistryKey.cables, 0)
     this.registry.set(RegistryKey.lives, LIVES_START)
@@ -196,7 +194,6 @@ export class PlayScene extends Phaser.Scene {
     if (this.ended) return
     this.elapsedMs += delta
     this.registry.set(RegistryKey.elapsedMs, this.elapsedMs)
-    this.skyline.tilePositionX = this.cameras.main.scrollX * 0.25
 
     const input = this.inputSystem.sample()
     this.player.update(input, delta)
