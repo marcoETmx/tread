@@ -570,25 +570,23 @@ const CABLE = [
   '....OOOO....',
 ]
 
-const VAN = frame('dolphin', 40, 18, [
-  '..................CCCCCCCC..............',
-  '................CCWHHHHHHWCC............',
-  '..............CCWWWWWWWWWWWCC...........',
-  '........CCCCCCWWWWWWWWWWWWWWWCC.........',
-  '......CCWWWWWWWWWWWWWWWWWWWWWWCC........',
-  '.....CWWLLLLLLLLLLWWWWWWWWWWWWWWC.......',
-  '....CWWLLLLLLLLLLLLWWWWWWWWWWWWWWC......',
-  '....CWlLLLLLLLLLLLLWWWWWWWWWWWWWWWC.....',
-  '....CWWWWWWWWWWWWWWWWWWWWWWWWWWWWWC.....',
-  '....CRRWWWWWWWWWWWWWWWWWWWWWYYYYWWC.....',
-  '....CWWWWWWWWWWWWWWWWWWWWWWWWWWWWWC.....',
-  '....CBBBBBBBBBBBBBBBBBBBBBBBBBBBBBC.....',
-  '.....C..CCCC..............CCCC..C.......',
-  '.....C.CNNNC..............CNNNC.C.......',
-  '......CCNSNC..............CNSNCC........',
-  '.......CNNNC..............CNNNC.........',
-  '.......CNNNC..............CNNNC.........',
-  '........CCC................CCC..........',
+const VAN = frame('dolphin', 40, 16, [
+  '.................CCCCCCCC...............',
+  '...............CCWHHHHHWWCC.............',
+  '.............CCWWWWWWWWWWWWCC...........',
+  '.......CCCCCCWWWWWWWWWWWWWWWWCC.........',
+  '.....CCWWWWWWWWWWWWWWWWWWWWWWWWC........',
+  '....CWWWLLLLLLWWWWWLLLLWWWWWWWWWC.......',
+  '...CWWWLLLLLLLLWWWLLLLLLWWWWWWWWWC......',
+  '...CWWWlLLLLLLLWWWLLLLLLWWWWWWWWWWC.....',
+  '...CWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWC.....',
+  '...CRRWWWWWWWWWWWWWWWWWWWWWWYYYYWWC.....',
+  '...CWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWC.....',
+  '...CBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBC.....',
+  '....C.CNNNC..............CNNNC.C........',
+  '....C.CNNSC..............CNNSC.C........',
+  '.....CCNNNC..............CNNNC.C........',
+  '......CCCC................CCCC..........',
 ])
 
 const HOUSE = [
@@ -664,12 +662,12 @@ function drawTileset(): HTMLCanvasElement {
   const { el, ctx } = canvas(size * 7, size)
 
   // 0 empty
-  // 1 ground
-  rect(ctx, size, 0, size, 8, PAL.G)
-  rect(ctx, size, 8, size, 4, PAL.O)
+  // 1 ground — orange lip is the walkable surface so sprites don't hover above it
+  rect(ctx, size, 0, size, 4, PAL.O)
+  rect(ctx, size, 4, size, 8, PAL.G)
   rect(ctx, size, 12, size, 20, PAL.A)
   for (let i = 0; i < 8; i += 1) {
-    rect(ctx, size + 4 + i * 4, 2, 2, 2, PAL.g)
+    rect(ctx, size + 4 + i * 4, 5, 2, 2, PAL.g)
   }
 
   // 2 fill

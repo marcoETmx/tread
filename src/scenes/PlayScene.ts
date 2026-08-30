@@ -124,21 +124,21 @@ export class PlayScene extends Phaser.Scene {
       const feetY = tileSurfaceY(level.tiles, object.x, object.y)
       switch (object.type) {
         case 'van':
-          plant(this, object.x, feetY, 'van', 1.55, 6)
+          plant(this, object.x, feetY + 6, 'van', 1.55, 6)
           break
         case 'house':
-          plant(this, object.x, feetY, 'house', 2.2, 4)
+          plant(this, object.x, feetY + 4, 'house', 2.2, 4)
           break
         case 'cone':
-          plant(this, object.x, feetY, 'cone', 1, 5)
+          plant(this, object.x, feetY + 4, 'cone', 1, 5)
           break
         case 'window':
           this.add.image(object.x, object.y, 'window').setDepth(3)
           break
         case 'cable': {
-          const coil = this.physics.add.staticImage(object.x, feetY - 4, 'cable')
+          const coil = this.physics.add.staticImage(object.x, feetY - 2, 'cable')
           coil.setOrigin(0.5, 1)
-          coil.setPosition(object.x, feetY - 4)
+          coil.setPosition(object.x, feetY - 2)
           coil.refreshBody()
           coil.setDepth(9)
           cables.add(coil)
