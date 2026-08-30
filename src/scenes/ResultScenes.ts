@@ -105,7 +105,7 @@ export class WinScene extends Phaser.Scene {
 
   create(): void {
     resultUi(this, copy.winTitle, copy.winBody, theme.orange)
-    const tech = this.add.sprite(GAME_WIDTH / 2 - 20, 620, 'player', 0).setOrigin(0.5, 1).setScale(1.35).play('player-install')
+    const tech = this.add.sprite(GAME_WIDTH / 2 - 20, 620, 'player', 0).setOrigin(0.5, 1).setScale(1.05).play('player-install')
     this.add.sprite(GAME_WIDTH / 2 + 86, 620, 'box', 0).setOrigin(0.5, 1).play('box-blink').setScale(1.2)
     spawnSparks(this, tech.x, tech.y - 70, 12)
   }
@@ -118,7 +118,7 @@ export class FailScene extends Phaser.Scene {
 
   create(): void {
     resultUi(this, copy.failTitle, copy.failBody, 0xb42318)
-    this.add.sprite(GAME_WIDTH / 2 - 16, 620, 'player', 0).setOrigin(0.5, 1).setScale(1.35).play('player-hurt')
-    this.add.sprite(GAME_WIDTH / 2 + 100, 620, 'dog', 0).setOrigin(0.5, 1).play('dog-run').setScale(1.25)
+    this.add.sprite(GAME_WIDTH / 2 - 16, 620, 'player', 0).setOrigin(0.5, 1).setScale(1.05).play('player-hurt')
+    this.add.sprite(GAME_WIDTH / 2 + 120, 620, 'dog', 0).setOrigin(0.5, 1).play('dog-run').setScale(1.2)
   }
 }

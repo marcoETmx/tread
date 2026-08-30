@@ -21,17 +21,17 @@ export class Player {
     this.sprite.setDepth(10)
     this.sprite.setCollideWorldBounds(false)
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
-    body.setSize(22, 48)
+    body.setSize(30, 80)
     body.setMaxVelocity(PLAYER.speed + 40, PLAYER.maxFall)
     this.syncBodyOffset()
   }
 
   private syncBodyOffset(): void {
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
-    const frameW = 64
-    const bodyW = 22
-    const offsetX = this.sprite.flipX ? frameW - 14 - bodyW : 14
-    body.setOffset(offsetX, 42)
+    const frameW = 96
+    const bodyW = 30
+    const offsetX = this.sprite.flipX ? frameW - 22 - bodyW : 22
+    body.setOffset(offsetX, 44)
   }
 
   get x(): number {

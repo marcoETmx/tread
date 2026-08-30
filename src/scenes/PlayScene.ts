@@ -185,7 +185,7 @@ export class PlayScene extends Phaser.Scene {
           break
         }
         case 'dog': {
-          const dog = new PatrolDog(this, object.x, feetY - 16, object.minX ?? object.x - 80, object.maxX ?? object.x + 80)
+          const dog = new PatrolDog(this, object.x, feetY - 24, object.minX ?? object.x - 80, object.maxX ?? object.x + 80)
           this.dogs.push(dog)
           this.physics.add.collider(dog.sprite, layer)
           this.physics.add.overlap(this.player.sprite, dog.sprite, () => {
