@@ -11,7 +11,7 @@ export class PatrolDog {
     this.maxX = maxX
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setSize(40, 22)
-    body.setOffset(10, 8)
+    body.setOffset(10, 6)
     body.setVelocityX(70)
     body.setBounce(0, 0)
     this.sprite.setDepth(8)

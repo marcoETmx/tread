@@ -31,7 +31,7 @@ export class Player {
     const frameW = 64
     const bodyW = 22
     const offsetX = this.sprite.flipX ? frameW - 14 - bodyW : 14
-    body.setOffset(offsetX, 48)
+    body.setOffset(offsetX, 42)
   }
 
   get x(): number {

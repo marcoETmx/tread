@@ -20,6 +20,28 @@ import { audio } from '../systems/AudioSystem.ts'
 import { InputSystem } from '../systems/InputSystem.ts'
 import { floatScore, spawnDebris, spawnPickupBurst, spawnSparks } from '../systems/VfxSystem.ts'
 
+function tileSurfaceY(tiles: number[][], x: number, fromY: number): number {
+  const tileX = Math.floor(x / TILE_SIZE)
+  let tileY = Math.max(0, Math.floor(fromY / TILE_SIZE))
+  while (tileY < tiles.length) {
+    const id = tiles[tileY]?.[tileX] ?? 0
+    if (id > 0) return tileY * TILE_SIZE
+    tileY += 1
+  }
+  return fromY
+}
+
+function plant(
+  scene: Phaser.Scene,
+  x: number,
+  feetY: number,
+  key: string,
+  scale: number,
+  depth: number,
+): Phaser.GameObjects.Image {
+  return scene.add.image(x, feetY, key).setOrigin(0.5, 1).setScale(scale).setDepth(depth)
+}
+
 export class PlayScene extends Phaser.Scene {
   private player!: Player
   private inputSystem!: InputSystem
@@ -111,33 +133,29 @@ export class PlayScene extends Phaser.Scene {
     const installBoxes = this.physics.add.staticGroup()
 
     for (const object of level.objects) {
+      const feetY = tileSurfaceY(level.tiles, object.x, object.y)
       switch (object.type) {
         case 'van':
-          this.add.image(object.x, object.y - 16, 'van').setScale(2.05).setDepth(6)
+          plant(this, object.x, feetY + 6, 'van', 1.45, 6)
           break
         case 'house':
-          this.add.image(object.x, object.y - 28, 'house').setScale(2.55).setDepth(4)
+          plant(this, object.x, feetY + 4, 'house', 2.2, 4)
           break
         case 'cone':
-          this.add.image(object.x, object.y + 4, 'cone').setScale(1.25).setDepth(5)
+          plant(this, object.x, feetY + 4, 'cone', 1.15, 5)
           break
         case 'window':
           this.add.image(object.x, object.y, 'window').setScale(1.35).setDepth(3)
           break
         case 'cable': {
-          const coil = this.physics.add.staticSprite(object.x, object.y - 10, 'cable')
+          const coil = this.physics.add.staticSprite(object.x, feetY - 2, 'cable')
+          coil.setOrigin(0.5, 1)
+          coil.setPosition(object.x, feetY - 2)
+          coil.refreshBody()
           coil.setDepth(9)
           coil.setScale(1.12)
           coil.play('cable-spin')
           cables.add(coil)
-          this.tweens.add({
-            targets: coil,
-            y: coil.y - 4,
-            duration: 520,
-            yoyo: true,
-            repeat: -1,
-            ease: 'sine.inOut',
-          })
           break
         }
         case 'wire': {
@@ -147,11 +165,14 @@ export class PlayScene extends Phaser.Scene {
           break
         }
         case 'install': {
-          const box = installBoxes.create(object.x, object.y, 'box') as Phaser.Physics.Arcade.Sprite
+          const box = installBoxes.create(object.x, feetY, 'box') as Phaser.Physics.Arcade.Sprite
+          box.setOrigin(0.5, 1)
+          box.setPosition(object.x, feetY)
+          box.refreshBody()
           box.setDepth(8)
           box.play('box-blink')
           this.add
-            .text(object.x, object.y - 56, 'INSTALAR', {
+            .text(object.x, feetY - box.displayHeight - 16, 'INSTALAR', {
               fontFamily: 'ui-sans-serif, system-ui, sans-serif',
               fontSize: '18px',
               color: theme.orangeHex,
@@ -159,12 +180,12 @@ export class PlayScene extends Phaser.Scene {
               stroke: theme.inkHex,
               strokeThickness: 5,
             })
-            .setOrigin(0.5)
+            .setOrigin(0.5, 1)
             .setDepth(8)
           break
         }
         case 'dog': {
-          const dog = new PatrolDog(this, object.x, object.y, object.minX ?? object.x - 80, object.maxX ?? object.x + 80)
+          const dog = new PatrolDog(this, object.x, feetY - 16, object.minX ?? object.x - 80, object.maxX ?? object.x + 80)
           this.dogs.push(dog)
           this.physics.add.collider(dog.sprite, layer)
           this.physics.add.overlap(this.player.sprite, dog.sprite, () => {

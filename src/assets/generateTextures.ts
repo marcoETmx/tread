@@ -122,19 +122,19 @@ function headRows(lean: number): string[] {
     '.....IIIIIIIIII',
     '....ICCCCCCCCCI',
     '...ICCCCCCCCCCCI',
-    '...ICCOOOOOOCCI',
-    '...ICCOWWWWWCCI',
-    '...ICCOIIIIOCCI',
+    '...ICCQQQQQQCCI',
+    '...ICCQWWWWWCCI',
+    '...ICCQIIIIQCCI',
     '...ICCRSSSSSCCI',
     '...ICRRBWWBSSCI',
     '...ICRSSsssSCCI',
     '....ICSSSSSSCI',
     '.....IssSSssI',
     '......ISSSSI',
-    '.....IKKKKKKI',
-    '....IKKWWKKKKI',
-    '....IKKKKKKKKI',
-    '...IkKKKKKKKKkI',
+    '.....IRRRRRRI',
+    '....IRRWWWRRRI',
+    '....IRRRRRRRRI',
+    '...IrRRRRRRRRrI',
   ].map((row) => shift32(row, lean))
 }
 
@@ -157,18 +157,18 @@ function packRows(): string[] {
 
 function vestRows(lean: number): string[] {
   return [
-    '...IIKKKKKKKKII',
-    '..IKKKWWWWKKKKI',
-    '..IKKKKKKKKKKKI',
-    '.IkKKKKKKKKKKkI',
-    '..IKKKKKKKKKKKI',
-    '..IKKKkKKKKKKKI',
-    '..IKKKOOOOOKKKI',
-    '..IKKKkQkKKKKKI',
-    '...IKKKKKKKKKI',
-    '...IKkKKKKKKI',
-    '....IKKKKKKI',
-    '....IkDDDDKI',
+    '...IIRRRRRRRRII',
+    '..IRRRWWWWRRRRI',
+    '..IRRRRRRRRRRRI',
+    '.IrRRRRRRRRRRrI',
+    '..IRRRRRRRRRRRI',
+    '..IRRRrRRRRRRRI',
+    '..IRRROOOOORRRI',
+    '..IRRRrQrRRRRRI',
+    '...IRRRRRRRRRI',
+    '...IRrRRRRRRI',
+    '....IRRRRRRI',
+    '....IrLLLLRI',
   ].map((row) => shift32(row, lean))
 }
 
@@ -176,11 +176,11 @@ function armRows(arm: Arm): string[] {
   if (arm === 'fwd') {
     return [
       '',
-      'IKI',
-      'IKKI',
-      'IKKKI',
-      '.IKKI',
-      '..IKI',
+      'ISI',
+      'ISSI',
+      'ISSSI',
+      '.ISSI',
+      '..ISI',
       '...I',
       '',
       '',
@@ -192,10 +192,10 @@ function armRows(arm: Arm): string[] {
   if (arm === 'back') {
     return [
       '',
-      '.................IKI',
-      '................IKKI',
-      '...............IKKKI',
-      '................IKI',
+      '.................ISI',
+      '................ISSI',
+      '...............ISSSI',
+      '................ISI',
       '',
       '',
       '',
@@ -207,9 +207,9 @@ function armRows(arm: Arm): string[] {
   }
   if (arm === 'up') {
     return [
-      'IKI',
-      'IKI',
-      'IKI',
+      'ISI',
+      'ISI',
+      'ISI',
       '.II',
       '',
       '',
@@ -225,9 +225,9 @@ function armRows(arm: Arm): string[] {
     return [
       '',
       'II................II',
-      'IKI..............IKI',
-      'IKKI............IKKI',
-      '.IKI............IKI',
+      'ISI..............ISI',
+      'ISSI............ISSI',
+      '.ISI............ISI',
       '..I..............I',
       '',
       '',
@@ -239,10 +239,10 @@ function armRows(arm: Arm): string[] {
   }
   return [
     '',
-    'IKI',
-    'IKI',
-    'IKI',
-    'IKI',
+    'ISI',
+    'ISI',
+    'ISI',
+    'ISI',
     'IsI',
     '.I',
     '',
@@ -265,14 +265,14 @@ function padLegs(rows: readonly string[]): string[] {
 }
 
 const LEGS_IDLE = padLegs([
-  '....IDDDDDDDI',
-  '....IDD..DDI',
-  '....ID....DI',
-  '....Id....dI',
-  '....ID....DI',
-  '....ID....DI',
-  '....ID....DI',
-  '....ID....DI',
+  '....ILLLLLLLI',
+  '....ILL..LLI',
+  '....IL....LI',
+  '....IT....TI',
+  '....IL....LI',
+  '....IL....LI',
+  '....IL....LI',
+  '....IL....LI',
   '...IBB....BBI',
   '...IBBB..BBBI',
   '...IBB....BBI',
@@ -280,14 +280,14 @@ const LEGS_IDLE = padLegs([
 ])
 
 const LEGS_IDLE_B = padLegs([
-  '....IDDDDDDDI',
-  '....IDD..DDI',
-  '....ID....DI',
-  '....Id....dI',
-  '....ID....DI',
-  '....ID....DI',
-  '....ID....DI',
-  '.....ID...DI',
+  '....ILLLLLLLI',
+  '....ILL..LLI',
+  '....IL....LI',
+  '....IT....TI',
+  '....IL....LI',
+  '....IL....LI',
+  '....IL....LI',
+  '.....IL...LI',
   '...IBB....BBI',
   '...IBBB..BBBI',
   '....IBB...BBI',
@@ -296,75 +296,75 @@ const LEGS_IDLE_B = padLegs([
 
 const LEGS_WALK: readonly string[][] = [
   padLegs([
-    '....IDDDDDDDI',
-    '...IDD....DDI',
-    '..IDD......DI',
-    '..Id........dI',
-    '.IDD........DI',
-    'IDD..........DI',
-    'ID............DI',
+    '....ILLLLLLLI',
+    '...ILL....LLI',
+    '..ILL......LI',
+    '..IT........TI',
+    '.ILL........LI',
+    'ILL..........LI',
+    'IL............LI',
     'IBB..........BBI',
     'IBBB........BBBI',
     'IBB..........BBI',
     'III..........III',
   ]),
   padLegs([
-    '....IDDDDDDDI',
-    '...IDD...DDI',
-    '..IDD.....DI',
-    '..Id......dI',
-    '.IDD......DI',
-    'IDD........DI',
-    'ID..........DI',
+    '....ILLLLLLLI',
+    '...ILL...LLI',
+    '..ILL.....LI',
+    '..IT......TI',
+    '.ILL......LI',
+    'ILL........LI',
+    'IL..........LI',
     'IBB........BBI',
     'IBBB......BBBI',
     '.IBB......BBI',
     '.III......III',
   ]),
   padLegs([
-    '....IDDDDDDDI',
-    '....IDD.DDI',
-    '....ID...DI',
-    '....Id...dI',
-    '....ID...DI',
-    '...IDD...DDI',
-    '...ID.....DI',
+    '....ILLLLLLLI',
+    '....ILL.LLI',
+    '....IL...LI',
+    '....IT...TI',
+    '....IL...LI',
+    '...ILL...LLI',
+    '...IL.....LI',
     '...IBB...BBI',
     '...IBBB.BBBI',
     '...IBB...BBI',
     '...III...III',
   ]),
   padLegs([
-    '....IDDDDDDDI',
-    '...IDI...IDI',
-    '..ID.......DI',
-    '.IDd.......dI',
-    'IDD.........DI',
-    'ID...........DI',
+    '....ILLLLLLLI',
+    '...ILI...ILI',
+    '..IL.......LI',
+    '.ILT.......TI',
+    'ILL.........LI',
+    'IL...........LI',
     'IBB.........BBI',
     'IBBB.......BBBI',
     'IBB.........BBI',
     'III.........III',
   ]),
   padLegs([
-    '....IDDDDDDDI',
-    '....IDD.DDI',
-    '...IDD...DDI',
-    '...Id.....dI',
-    '....ID....DI',
-    '....ID....DI',
+    '....ILLLLLLLI',
+    '....ILL.LLI',
+    '...ILL...LLI',
+    '...IT.....TI',
+    '....IL....LI',
+    '....IL....LI',
     '....IBB..BBI',
     '....IBBBBBBI',
     '....IBB..BBI',
     '....III..III',
   ]),
   padLegs([
-    '....IDDDDDDDI',
-    '...IDI...DI',
-    '..IDD.....DI',
-    '.IDd......dI',
-    'IDD........DI',
-    'ID.........DI',
+    '....ILLLLLLLI',
+    '...ILI...LI',
+    '..ILL.....LI',
+    '.ILT......TI',
+    'ILL........LI',
+    'IL.........LI',
     'IBB........BBI',
     'IBBB......BBBI',
     '.IBB......BBI',
@@ -373,12 +373,12 @@ const LEGS_WALK: readonly string[][] = [
 ]
 
 const LEGS_JUMP = padLegs([
-  '....IDDDDDDDI',
-  '...IDD....DDI',
-  '..IDD......DDI',
-  '..Id........dI',
-  '.IDD........DI',
-  '.ID..........DI',
+  '....ILLLLLLLI',
+  '...ILL....LLI',
+  '..ILL......LLI',
+  '..IT........TI',
+  '.ILL........LI',
+  '.IL..........LI',
   'IBB..........BBI',
   'IBBB........BBBI',
   'IBB..........BBI',
@@ -386,12 +386,12 @@ const LEGS_JUMP = padLegs([
 ])
 
 const LEGS_FALL = padLegs([
-  '....ID....DI',
-  '...ID......DI',
-  '..ID........DI',
-  '..Id........dI',
-  '.IDD........DDI',
-  '.ID..........DI',
+  '....IL....LI',
+  '...IL......LI',
+  '..IL........LI',
+  '..IT........TI',
+  '.ILL........LLI',
+  '.IL..........LI',
   '..IBB......BBI',
   '..IBBB....BBBI',
   '..IBB......BBI',
@@ -408,9 +408,9 @@ const PLAYER_HURT = [
   ...headRows(2),
   ...torsoRows(2, 'out'),
   ...padLegs([
-    '...IDD......DDI',
-    '..ID..........DI',
-    '.IDd..........dI',
+    '...ILL......LLI',
+    '..IL..........LI',
+    '.ILT..........TI',
     'IBB............BBI',
     'IBBB..........BBBI',
     'IBB............BBI',
@@ -420,10 +420,10 @@ const PLAYER_HURT = [
 
 const PLAYER_INSTALL_A = playerFrame(
   padLegs([
-    '....IDDDDDDDI',
-    '...IDD....DDI',
-    '...ID......DI',
-    '..ID........DI',
+    '....ILLLLLLLI',
+    '...ILL....LLI',
+    '...IL......LI',
+    '..IL........LI',
     '..IBB......BBI',
     '..IBBB....BBBI',
     '..IBB......BBI',
@@ -435,10 +435,10 @@ const PLAYER_INSTALL_A = playerFrame(
 
 const PLAYER_INSTALL_B = playerFrame(
   padLegs([
-    '....IDDDDDDDI',
-    '...IDD....DDI',
-    '...ID......DI',
-    '..ID........DI',
+    '....ILLLLLLLI',
+    '...ILL....LLI',
+    '...IL......LI',
+    '..IL........LI',
     '..IBB......BBI',
     '..IBBB....BBBI',
     '..IBB......BBI',
@@ -540,24 +540,22 @@ const CABLE_B = [
 ].map((row) => dw(row, 20))
 
 const VAN = [
-  '..............IIIIIIIIIIIIII',
-  '............IICCCCCCCCCCCCCII',
-  '..........IICCIIIIIIIIIIIICCII',
-  '.........IICCNNNNNNNNNNNNNCCCI',
-  '........IICCNYYYYYYYYYYYYNCCCI',
-  '.......IICCCNYYIOOIYYIOOYNCCCCI',
-  '.......IICCCCCCCCCCCCCCCCCCCCI',
-  '......IICCOOOOOOOOOOOOOOOOCCCI',
-  '......IICCCWWWOOOOWWWCCCCCCCI',
-  '.....IICCCCCCCCCCCCCCCCCCCCCI',
-  '.....IICC..........ICC....CCI',
-  '.....ICC............IC.....CI',
-  '....ICCC..........ICCC...ICCI',
-  '...ICBBBI........ICBBB.ICBBBI',
-  '...ICBWBI........ICBWB.ICBWBI',
-  '...ICBBBI........ICBBB.ICBBBI',
-  '....ICCCI.........ICCCI.ICCI',
-  '.....III...........III...II',
+  '.................IIIIIIII',
+  '...............IIWWWWWWWWII',
+  '.............IIWWWWWWWWWWWWII',
+  '.......IIIIIIWWWWWWWWWWWWWWWWII',
+  '.....IIWWWWWWWWWWWWWWWWWWWWWWWWI',
+  '....IWWWAAAAAAWWWWWAAAAWWWWWWWWWI',
+  '...IWWWAAAAAAAAWWWAAAAAAWWWWWWWWWI',
+  '...IWWWHAAAAAAAWWWAAAAAAWWWWWWWWWWI',
+  '...IWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWI',
+  '...IRRRWWWWWWWWWWWWWWWWWWWWWYYYYWWI',
+  '...IWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWI',
+  '...IAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAI',
+  '....I.IBBBI..............IBBBI.I',
+  '....I.IBBGI..............IBBGI.I',
+  '.....IIBBBI..............IBBBI.I',
+  '......IIII................IIII',
 ].map((row) => dw(row, 48))
 
 const HOUSE = [
@@ -713,14 +711,14 @@ function drawTileset(): HTMLCanvasElement {
   const size = 32
   const { el, ctx } = canvas(size * 7, size)
 
-  // 1 ground — curb, hazard stripe, cracks, manhole
-  rect(ctx, size, 0, size, 7, PAL.G)
-  rect(ctx, size, 1, size, 2, PAL.g)
-  rect(ctx, size, 7, size, 5, PAL.O)
-  rect(ctx, size, 9, size, 2, PAL.I)
+  // 1 ground — orange lip is the walkable surface, then curb/cracks
+  rect(ctx, size, 0, size, 4, PAL.O)
+  rect(ctx, size, 4, size, 5, PAL.G)
+  rect(ctx, size, 5, size, 2, PAL.g)
+  rect(ctx, size, 9, size, 3, PAL.I)
   rect(ctx, size, 12, size, 20, PAL.H)
   for (let i = 0; i < 7; i += 1) {
-    rect(ctx, size + 2 + i * 4, 3, 2, 2, PAL.g)
+    rect(ctx, size + 2 + i * 4, 6, 2, 2, PAL.g)
   }
   rect(ctx, size + 6, 16, 4, 2, PAL.A)
   rect(ctx, size + 22, 20, 5, 2, PAL.T)
@@ -1118,7 +1116,7 @@ export function createGeneratedCanvases(): Record<string, HTMLCanvasElement> {
     player: sheet(playerFrames, 2),
     dog: sheet(DOG_FRAMES, 2),
     cable: sheet([CABLE_A, CABLE_B], 3),
-    van: sheet([VAN], 2),
+    van: sheet([VAN], 3),
     house: sheet([HOUSE], 2),
     box: sheet([BOX_A, BOX_B], 3),
     cone: sheet([CONE], 3),

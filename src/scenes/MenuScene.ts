@@ -49,11 +49,16 @@ export class MenuScene extends Phaser.Scene {
     this.add.rectangle(GAME_WIDTH / 2, 196, 620, 6, theme.orange, 1)
     this.add.rectangle(GAME_WIDTH / 2, 258, 420, 4, theme.navy, 0.7)
 
-    this.add.image(168, 536, 'van').setScale(2.45)
-    const preview = this.add.sprite(338, 508, 'player', 0).setScale(2)
+    const streetY = 662
+    this.add.rectangle(GAME_WIDTH / 2, streetY + 40, GAME_WIDTH, 88, theme.navy, 0.92)
+    this.add.rectangle(GAME_WIDTH / 2, streetY + 2, GAME_WIDTH, 6, theme.orange, 1)
+    this.add.image(168, streetY, 'van').setOrigin(0.5, 1).setScale(1.7)
+    const preview = this.add.sprite(338, streetY, 'player', 0).setOrigin(0.5, 1).setScale(1.7)
     preview.play('player-walk')
-    this.add.image(292, 562, 'dust').setScale(1.4).setAlpha(0.8)
-    this.add.image(376, 562, 'dust').setScale(1.05).setAlpha(0.55)
+    const dogPreview = this.add.sprite(430, streetY, 'dog', 0).setOrigin(0.5, 1).setScale(1.5)
+    dogPreview.play('dog-run')
+    this.add.image(292, streetY, 'dust').setOrigin(0.5, 1).setScale(1.4).setAlpha(0.8)
+    this.add.image(376, streetY, 'dust').setOrigin(0.5, 1).setScale(1.05).setAlpha(0.55)
 
     this.add
       .text(GAME_WIDTH / 2, 118, copy.mission, {
@@ -121,8 +126,8 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
 
-    this.add.image(1020, 492, 'house').setScale(2.45)
-    this.add.sprite(860, 548, 'box', 0).play('box-blink').setScale(1.7)
-    this.add.sprite(800, 524, 'cable', 0).play('cable-spin').setScale(1.35)
+    this.add.image(1020, streetY, 'house').setOrigin(0.5, 1).setScale(1.85)
+    this.add.sprite(860, streetY, 'box', 0).setOrigin(0.5, 1).play('box-blink').setScale(1.4)
+    this.add.sprite(800, streetY, 'cable', 0).setOrigin(0.5, 1).play('cable-spin').setScale(1.25)
   }
 }
