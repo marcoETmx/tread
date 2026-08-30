@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "preview": "vite preview --host --port 4173"
+    "preview": "vite preview --host --port 4173",
+    "test:jumps": "node --experimental-strip-types scripts/check-jumps.ts"
   },
   "dependencies": {
     "phaser": "^4.2.1"

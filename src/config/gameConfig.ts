@@ -10,7 +10,7 @@ import { FailScene, WinScene } from '../scenes/ResultScenes.ts'
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  parent: 'game-root',
+  parent: 'game-frame',
   title: 'Tread',
   backgroundColor: theme.navyHex,
   pixelArt: true,
@@ -21,7 +21,9 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
-    parent: 'game-root',
+    parent: 'game-frame',
+    expandParent: false,
+    resizeInterval: 100,
   },
   physics: {
     default: 'arcade',

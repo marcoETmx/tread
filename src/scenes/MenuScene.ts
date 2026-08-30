@@ -22,7 +22,6 @@ function addButton(
 
   const activate = () => {
     audio.resume()
-    scene.scale.startFullscreen()
     onClick()
   }
 
@@ -73,6 +72,15 @@ export class MenuScene extends Phaser.Scene {
       .setOrigin(0.5)
 
     addButton(this, GAME_WIDTH / 2, 430, copy.play, () => {
+      this.scene.start(SceneKey.Play)
+    })
+
+    this.input.keyboard?.on('keydown-ENTER', () => {
+      audio.resume()
+      this.scene.start(SceneKey.Play)
+    })
+    this.input.keyboard?.on('keydown-SPACE', () => {
+      audio.resume()
       this.scene.start(SceneKey.Play)
     })
 

@@ -11,6 +11,7 @@ export class Player {
   private installing = false
   private wasGrounded = true
   private jumpCutApplied = false
+  private jumpHoldMs = 0
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     this.sprite = scene.physics.add.sprite(x, y, 'player', 0)
@@ -57,6 +58,8 @@ export class Player {
     this.installing = false
     this.sprite.setPosition(x, y)
     this.body.setVelocity(0, 0)
+    this.jumpCutApplied = false
+    this.jumpHoldMs = 0
     this.hurtFlash()
   }
 
@@ -94,12 +97,18 @@ export class Player {
       this.coyoteMs = 0
       this.bufferMs = 0
       this.jumpCutApplied = false
+      this.jumpHoldMs = 0
       audio.jump()
     }
 
+    if (input.jump) this.jumpHoldMs += delta
+
+    // A quick tap is a full jump. Hold-then-release still cuts height.
     if (!input.jump && !this.jumpCutApplied && this.body.velocity.y < 0) {
-      this.body.setVelocityY(this.body.velocity.y * PLAYER.jumpCut)
-      this.jumpCutApplied = true
+      if (this.jumpHoldMs >= PLAYER.jumpTapMs) {
+        this.body.setVelocityY(this.body.velocity.y * PLAYER.jumpCut)
+        this.jumpCutApplied = true
+      }
     }
 
     if (this.invulnMs > 0) {
