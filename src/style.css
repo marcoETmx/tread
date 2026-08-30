@@ -1,0 +1,171 @@
+:root {
+  color-scheme: dark;
+  --navy: #051d2e;
+  --sky: #0049fc;
+  --orange: #ff7420;
+  --fog: #cbe9f2;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--navy);
+  font-family: ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  touch-action: none;
+  user-select: none;
+}
+
+#game-root {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: var(--navy);
+}
+
+canvas {
+  display: block;
+  position: relative;
+  z-index: 1;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+#rotate-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: var(--navy);
+  color: white;
+  text-align: center;
+  padding: 24px;
+}
+
+#rotate-overlay[hidden] {
+  display: none;
+}
+
+.rotate-card p {
+  margin: 16px 0 6px;
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.rotate-card span {
+  color: var(--fog);
+  font-size: 0.95rem;
+}
+
+.phone-icon {
+  width: 52px;
+  height: 84px;
+  margin: 0 auto;
+  border: 4px solid var(--orange);
+  border-radius: 10px;
+  position: relative;
+  animation: tilt 1.4s ease-in-out infinite;
+}
+
+.phone-icon::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--sky);
+  transform: translateX(-50%);
+}
+
+@keyframes tilt {
+  0%,
+  20% {
+    transform: rotate(0deg);
+  }
+  50%,
+  80% {
+    transform: rotate(90deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+#touch-ui {
+  display: none;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: max(12px, env(safe-area-inset-bottom));
+  z-index: 30;
+  padding: 0 18px;
+  align-items: flex-end;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+#touch-ui button {
+  pointer-events: auto;
+  appearance: none;
+  border: 0;
+  color: white;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: rgba(5, 29, 46, 0.72);
+  border: 2px solid rgba(255, 116, 32, 0.85);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.35);
+}
+
+#touch-ui button:active,
+#touch-ui button.is-down {
+  transform: translateY(4px);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.35);
+  background: rgba(0, 73, 252, 0.85);
+}
+
+.cluster {
+  display: flex;
+  gap: 12px;
+}
+
+#btn-left,
+#btn-right {
+  width: 74px;
+  height: 74px;
+  border-radius: 18px;
+  font-size: 1.6rem;
+}
+
+#btn-jump {
+  width: 118px;
+  height: 74px;
+  border-radius: 37px;
+  font-size: 0.95rem;
+}
+
+@media (pointer: coarse), (hover: none) {
+  #touch-ui {
+    display: flex;
+  }
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+  #touch-ui {
+    display: none;
+  }
+}
