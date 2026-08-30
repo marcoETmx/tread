@@ -3,6 +3,7 @@ import {
   GAME_HEIGHT,
   GAME_WIDTH,
   INSTALL,
+  JUICE,
   LIVES_START,
   RegistryKey,
   SceneKey,
@@ -15,6 +16,7 @@ import { countCables, createLevel1 } from '../levels/level1.ts'
 import { TileId } from '../levels/types.ts'
 import { audio } from '../systems/AudioSystem.ts'
 import { InputSystem } from '../systems/InputSystem.ts'
+import { floatScore, spawnDebris, spawnPickupBurst, spawnSparks } from '../systems/VfxSystem.ts'
 
 export class PlayScene extends Phaser.Scene {
   private player!: Player
@@ -88,7 +90,7 @@ export class PlayScene extends Phaser.Scene {
     this.checkpointY = spawn?.y ?? 400
     this.player = new Player(this, this.checkpointX, this.checkpointY)
     this.physics.add.collider(this.player.sprite, layer)
-    this.cameras.main.startFollow(this.player.sprite, true, 0.14, 0.14)
+    this.cameras.main.startFollow(this.player.sprite, true, 0.22, 0.2)
     this.scale.on(Phaser.Scale.Events.RESIZE, this.lockCameraZoom, this)
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       this.scale.off(Phaser.Scale.Events.RESIZE, this.lockCameraZoom, this)
@@ -113,34 +115,43 @@ export class PlayScene extends Phaser.Scene {
           this.add.image(object.x, object.y, 'window').setDepth(3)
           break
         case 'cable': {
-          const coil = this.physics.add.staticImage(object.x, object.y - 8, 'cable')
+          const coil = this.physics.add.staticSprite(object.x, object.y - 8, 'cable')
           coil.setDepth(9)
+          coil.play('cable-spin')
           cables.add(coil)
           this.tweens.add({
             targets: coil,
-            scale: 1.08,
-            duration: 650,
+            y: coil.y - 4,
+            duration: 520,
             yoyo: true,
             repeat: -1,
             ease: 'sine.inOut',
           })
           break
         }
-        case 'wire':
-          hazards.create(object.x, object.y, 'wire').setDepth(7)
+        case 'wire': {
+          const live = hazards.create(object.x, object.y, 'wire') as Phaser.Physics.Arcade.Sprite
+          live.setDepth(7)
+          live.play('wire-spark')
           break
-        case 'install':
-          installBoxes.create(object.x, object.y, 'box').setDepth(8)
+        }
+        case 'install': {
+          const box = installBoxes.create(object.x, object.y, 'box') as Phaser.Physics.Arcade.Sprite
+          box.setDepth(8)
+          box.play('box-blink')
           this.add
-            .text(object.x, object.y - 48, 'INSTALAR', {
+            .text(object.x, object.y - 52, 'INSTALAR', {
               fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-              fontSize: '14px',
+              fontSize: '16px',
               color: theme.orangeHex,
-              fontStyle: '700',
+              fontStyle: '900',
+              stroke: theme.inkHex,
+              strokeThickness: 4,
             })
             .setOrigin(0.5)
             .setDepth(8)
           break
+        }
         case 'dog': {
           const dog = new PatrolDog(this, object.x, object.y, object.minX ?? object.x - 80, object.maxX ?? object.x + 80)
           this.dogs.push(dog)
@@ -166,7 +177,8 @@ export class PlayScene extends Phaser.Scene {
       this.registry.set(RegistryKey.cables, collected)
       this.registry.set(RegistryKey.score, Number(this.registry.get(RegistryKey.score) ?? 0) + 100)
       audio.collect()
-      this.spawnSparks(sprite.x, sprite.y)
+      spawnPickupBurst(this, sprite.x, sprite.y)
+      floatScore(this, sprite.x, sprite.y - 12, '+100')
     })
 
     this.physics.add.overlap(this.player.sprite, hazards, () => {
@@ -227,12 +239,18 @@ export class PlayScene extends Phaser.Scene {
     if (this.ended || this.player.isInstalling || this.player.isInvulnerable) return
     const lives = Number(this.registry.get(RegistryKey.lives) ?? 0) - 1
     this.registry.set(RegistryKey.lives, lives)
-    this.cameras.main.shake(160, 0.006)
+    this.cameras.main.shake(JUICE.shakeHurtMs, JUICE.shakeHurtIntensity)
+    spawnDebris(this, this.player.x, this.player.y)
+    this.player.beginHurt()
     if (lives <= 0) {
-      this.finish(false)
+      this.time.delayedCall(JUICE.deathHoldMs, () => this.finish(false))
       return
     }
-    this.player.respawn(this.checkpointX, this.checkpointY)
+    this.time.delayedCall(JUICE.hurtStunMs, () => {
+      if (this.ended) return
+      this.player.respawn(this.checkpointX, this.checkpointY)
+      spawnDebris(this, this.checkpointX, this.checkpointY)
+    })
   }
 
   private tryInstall(): void {
@@ -251,7 +269,15 @@ export class PlayScene extends Phaser.Scene {
 
     this.player.startInstall()
     audio.install()
-    this.spawnSparks(this.player.x, this.player.y)
+    spawnSparks(this, this.player.x, this.player.y, 16)
+    this.time.addEvent({
+      delay: 220,
+      repeat: 6,
+      callback: () => {
+        if (!this.player.isInstalling) return
+        spawnSparks(this, this.player.x, this.player.y - 10, 6)
+      },
+    })
     this.registry.set('hint', copy.installing)
     this.time.delayedCall(INSTALL.durationMs, () => {
       this.registry.set(RegistryKey.score, Number(this.registry.get(RegistryKey.score) ?? 0) + 500)
@@ -267,19 +293,5 @@ export class PlayScene extends Phaser.Scene {
     this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
       this.scene.start(won ? SceneKey.Win : SceneKey.Fail)
     })
-  }
-
-  private spawnSparks(x: number, y: number): void {
-    for (let i = 0; i < 8; i += 1) {
-      const spark = this.add.image(x, y, 'spark').setDepth(20)
-      this.tweens.add({
-        targets: spark,
-        x: x + Phaser.Math.Between(-40, 40),
-        y: y + Phaser.Math.Between(-50, 10),
-        alpha: 0,
-        duration: 350,
-        onComplete: () => spark.destroy(),
-      })
-    }
   }
 }

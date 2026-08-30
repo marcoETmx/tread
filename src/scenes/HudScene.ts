@@ -2,6 +2,8 @@ import Phaser from 'phaser'
 import { GAME_WIDTH, LIVES_START, RegistryKey, SceneKey } from '../config/constants.ts'
 import { copy, theme } from '../config/theme.ts'
 
+const HUD_FONT = 'ui-sans-serif, system-ui, sans-serif'
+
 export class HudScene extends Phaser.Scene {
   private cableText!: Phaser.GameObjects.Text
   private scoreText!: Phaser.GameObjects.Text
@@ -13,52 +15,72 @@ export class HudScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(0, 0, GAME_WIDTH, 64, theme.navy, 0.55).setOrigin(0).setScrollFactor(0)
+    this.add.rectangle(0, 0, GAME_WIDTH, 58, theme.navy, 0.72).setOrigin(0).setScrollFactor(0)
+    this.add.rectangle(0, 58, GAME_WIDTH, 4, theme.orange, 1).setOrigin(0).setScrollFactor(0)
 
-    this.add.image(36, 32, 'cable').setScale(0.55).setScrollFactor(0)
+    this.add.image(34, 30, 'cable').setScale(0.5).setScrollFactor(0)
     this.cableText = this.add
-      .text(64, 32, '', {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '22px',
-        fontStyle: '700',
+      .text(62, 30, '', {
+        fontFamily: HUD_FONT,
+        fontSize: '20px',
+        fontStyle: '800',
         color: '#ffffff',
+        stroke: theme.inkHex,
+        strokeThickness: 3,
       })
       .setOrigin(0, 0.5)
       .setScrollFactor(0)
 
     this.scoreText = this.add
-      .text(GAME_WIDTH / 2, 32, '', {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+      .text(GAME_WIDTH / 2, 22, '', {
+        fontFamily: HUD_FONT,
         fontSize: '22px',
-        fontStyle: '700',
-        color: theme.fogHex,
+        fontStyle: '900',
+        color: theme.sandHex,
+        stroke: theme.inkHex,
+        strokeThickness: 4,
       })
       .setOrigin(0.5)
       .setScrollFactor(0)
 
     this.add
-      .text(GAME_WIDTH - 28, 32, `${copy.house} →`, {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-        fontSize: '20px',
+      .text(GAME_WIDTH / 2, 44, copy.mission, {
+        fontFamily: HUD_FONT,
+        fontSize: '12px',
         fontStyle: '800',
         color: theme.orangeHex,
+        letterSpacing: 4,
+      })
+      .setOrigin(0.5)
+      .setScrollFactor(0)
+
+    this.add
+      .text(GAME_WIDTH - 24, 30, `${copy.house} →`, {
+        fontFamily: HUD_FONT,
+        fontSize: '20px',
+        fontStyle: '900',
+        color: theme.orangeHex,
+        stroke: theme.inkHex,
+        strokeThickness: 4,
       })
       .setOrigin(1, 0.5)
       .setScrollFactor(0)
 
     this.hintText = this.add
-      .text(GAME_WIDTH / 2, 84, '', {
-        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+      .text(GAME_WIDTH / 2, 88, '', {
+        fontFamily: HUD_FONT,
         fontSize: '22px',
-        fontStyle: '700',
+        fontStyle: '900',
         color: theme.orangeHex,
+        stroke: theme.inkHex,
+        strokeThickness: 5,
       })
       .setOrigin(0.5)
       .setScrollFactor(0)
 
     this.hearts = []
     for (let i = 0; i < LIVES_START; i += 1) {
-      this.hearts.push(this.add.image(GAME_WIDTH - 160 - i * 28, 32, 'heart').setScrollFactor(0))
+      this.hearts.push(this.add.image(GAME_WIDTH - 168 - i * 30, 30, 'heart').setScrollFactor(0).setScale(1.1))
     }
 
     this.refresh()
@@ -77,10 +99,10 @@ export class HudScene extends Phaser.Scene {
     const hint = String(this.registry.get('hint') ?? '')
 
     this.cableText.setText(`${copy.cables} ${cables}/${total}  ·  falta ${Math.max(0, needed - cables)}`)
-    this.scoreText.setText(`${score} pts`)
+    this.scoreText.setText(String(score).padStart(6, '0'))
     this.hintText.setText(hint)
     this.hearts.forEach((heart, index) => {
-      heart.setAlpha(index < lives ? 1 : 0.2)
+      heart.setAlpha(index < lives ? 1 : 0.22)
     })
   }
 }

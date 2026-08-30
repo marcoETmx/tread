@@ -149,11 +149,12 @@ body {
   appearance: none;
   border: 0;
   color: white;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  background: rgba(5, 29, 46, 0.72);
-  border: 2px solid rgba(255, 116, 32, 0.85);
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.35);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(5, 29, 46, 0.82);
+  border: 3px solid #ff7420;
+  box-shadow: 0 8px 0 #07080a;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
