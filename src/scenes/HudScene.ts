@@ -15,14 +15,14 @@ export class HudScene extends Phaser.Scene {
   }
 
   create(): void {
-    this.add.rectangle(0, 0, GAME_WIDTH, 58, theme.navy, 0.72).setOrigin(0).setScrollFactor(0)
-    this.add.rectangle(0, 58, GAME_WIDTH, 4, theme.orange, 1).setOrigin(0).setScrollFactor(0)
+    this.add.rectangle(0, 0, GAME_WIDTH, 66, theme.navy, 0.72).setOrigin(0).setScrollFactor(0)
+    this.add.rectangle(0, 66, GAME_WIDTH, 5, theme.orange, 1).setOrigin(0).setScrollFactor(0)
 
-    this.add.image(34, 30, 'cable').setScale(0.5).setScrollFactor(0)
+    this.add.image(40, 34, 'cable').setScale(0.7).setScrollFactor(0)
     this.cableText = this.add
-      .text(62, 30, '', {
+      .text(72, 34, '', {
         fontFamily: HUD_FONT,
-        fontSize: '20px',
+        fontSize: '22px',
         fontStyle: '800',
         color: '#ffffff',
         stroke: theme.inkHex,
@@ -32,9 +32,9 @@ export class HudScene extends Phaser.Scene {
       .setScrollFactor(0)
 
     this.scoreText = this.add
-      .text(GAME_WIDTH / 2, 22, '', {
+      .text(GAME_WIDTH / 2, 24, '', {
         fontFamily: HUD_FONT,
-        fontSize: '22px',
+        fontSize: '24px',
         fontStyle: '900',
         color: theme.sandHex,
         stroke: theme.inkHex,
@@ -44,9 +44,9 @@ export class HudScene extends Phaser.Scene {
       .setScrollFactor(0)
 
     this.add
-      .text(GAME_WIDTH / 2, 44, copy.mission, {
+      .text(GAME_WIDTH / 2, 48, copy.mission, {
         fontFamily: HUD_FONT,
-        fontSize: '12px',
+        fontSize: '13px',
         fontStyle: '800',
         color: theme.orangeHex,
         letterSpacing: 4,
@@ -55,9 +55,9 @@ export class HudScene extends Phaser.Scene {
       .setScrollFactor(0)
 
     this.add
-      .text(GAME_WIDTH - 24, 30, `${copy.house} →`, {
+      .text(GAME_WIDTH - 24, 34, `${copy.house} →`, {
         fontFamily: HUD_FONT,
-        fontSize: '20px',
+        fontSize: '22px',
         fontStyle: '900',
         color: theme.orangeHex,
         stroke: theme.inkHex,
@@ -67,9 +67,9 @@ export class HudScene extends Phaser.Scene {
       .setScrollFactor(0)
 
     this.hintText = this.add
-      .text(GAME_WIDTH / 2, 88, '', {
+      .text(GAME_WIDTH / 2, 96, '', {
         fontFamily: HUD_FONT,
-        fontSize: '22px',
+        fontSize: '24px',
         fontStyle: '900',
         color: theme.orangeHex,
         stroke: theme.inkHex,
@@ -80,7 +80,7 @@ export class HudScene extends Phaser.Scene {
 
     this.hearts = []
     for (let i = 0; i < LIVES_START; i += 1) {
-      this.hearts.push(this.add.image(GAME_WIDTH - 168 - i * 30, 30, 'heart').setScrollFactor(0).setScale(1.1))
+      this.hearts.push(this.add.image(GAME_WIDTH - 176 - i * 34, 34, 'heart').setScrollFactor(0).setScale(1.05))
     }
 
     this.refresh()

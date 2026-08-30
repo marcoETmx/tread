@@ -3,6 +3,19 @@ export const GAME_HEIGHT = 720
 
 export const TILE_SIZE = 32
 
+/** Play-scene camera only. HUD and the HTML touch pad stay at 1×. */
+export const CAMERA_ZOOM = 1.35
+
+export const CAMERA = {
+  /** World pixels. Positive X puts the player left of center (look-ahead). */
+  offsetXRight: 180,
+  /** Still left of center when facing left. */
+  offsetXLeft: 52,
+  /** Negative Y shows more rooftops above the player. */
+  offsetY: -28,
+  lookLerp: 0.006,
+} as const
+
 export const PLAYER = {
   speed: 260,
   airSpeed: 250,

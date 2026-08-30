@@ -22,8 +22,16 @@ export class Player {
     this.sprite.setCollideWorldBounds(false)
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
     body.setSize(22, 48)
-    body.setOffset(13, 24)
     body.setMaxVelocity(PLAYER.speed + 40, PLAYER.maxFall)
+    this.syncBodyOffset()
+  }
+
+  private syncBodyOffset(): void {
+    const body = this.sprite.body as Phaser.Physics.Arcade.Body
+    const frameW = 64
+    const bodyW = 22
+    const offsetX = this.sprite.flipX ? frameW - 14 - bodyW : 14
+    body.setOffset(offsetX, 48)
   }
 
   get x(): number {
@@ -74,6 +82,7 @@ export class Player {
     this.jumpCutApplied = false
     this.jumpHoldMs = 0
     this.invulnMs = PLAYER.invulnMs
+    this.syncBodyOffset()
   }
 
   update(input: GameInputState, delta: number): void {
@@ -116,6 +125,7 @@ export class Player {
     } else {
       this.body.setVelocityX(grounded ? 0 : this.body.velocity.x * 0.92)
     }
+    this.syncBodyOffset()
 
     if (this.bufferMs > 0 && this.coyoteMs > 0) {
       this.body.setVelocityY(PLAYER.jumpVelocity)

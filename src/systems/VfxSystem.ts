@@ -27,11 +27,11 @@ function puff(
 }
 
 export function spawnDust(scene: Phaser.Scene, x: number, y: number): void {
-  puff(scene, 'dust', x, y + 18, 3, 18, 10, 220, 9)
+  puff(scene, 'dust', x, y + 28, 3, 18, 10, 220, 9)
 }
 
 export function spawnLandDust(scene: Phaser.Scene, x: number, y: number): void {
-  puff(scene, 'dust', x, y + 22, 6, 28, 14, 280, 9)
+  puff(scene, 'dust', x, y + 34, 6, 28, 14, 280, 9)
 }
 
 export function spawnSparks(scene: Phaser.Scene, x: number, y: number, count = 10): void {
