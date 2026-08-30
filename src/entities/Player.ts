@@ -18,8 +18,8 @@ export class Player {
     this.sprite.setDepth(10)
     this.sprite.setCollideWorldBounds(false)
     const body = this.sprite.body as Phaser.Physics.Arcade.Body
-    body.setSize(22, 48)
-    body.setOffset(13, 24)
+    body.setSize(26, 54)
+    body.setOffset(22, 26)
     body.setMaxVelocity(PLAYER.speed + 40, PLAYER.maxFall)
   }
 

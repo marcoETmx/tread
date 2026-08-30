@@ -78,8 +78,8 @@ export class PreloadScene extends Phaser.Scene {
     })
     define('dog-run', {
       key: 'dog-run',
-      frames: this.anims.generateFrameNumbers('dog', { start: 0, end: 1 }),
-      frameRate: 6,
+      frames: this.anims.generateFrameNumbers('dog', { start: 0, end: 3 }),
+      frameRate: 8,
       repeat: -1,
     })
   }
