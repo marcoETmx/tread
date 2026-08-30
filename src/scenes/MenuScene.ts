@@ -49,7 +49,9 @@ export class MenuScene extends Phaser.Scene {
     this.add.rectangle(GAME_WIDTH / 2, 196, 620, 6, theme.orange, 1)
     this.add.rectangle(GAME_WIDTH / 2, 258, 420, 4, theme.navy, 0.7)
 
-    const streetY = 575
+    const streetY = 662
+    this.add.rectangle(GAME_WIDTH / 2, streetY + 40, GAME_WIDTH, 88, theme.navy, 0.92)
+    this.add.rectangle(GAME_WIDTH / 2, streetY + 2, GAME_WIDTH, 6, theme.orange, 1)
     this.add.image(168, streetY, 'van').setOrigin(0.5, 1).setScale(1.7)
     const preview = this.add.sprite(338, streetY, 'player', 0).setOrigin(0.5, 1).setScale(1.7)
     preview.play('player-walk')
@@ -124,8 +126,8 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
 
-    this.add.image(1020, streetY, 'house').setOrigin(0.5, 1).setScale(2.2)
+    this.add.image(1020, streetY, 'house').setOrigin(0.5, 1).setScale(1.85)
     this.add.sprite(860, streetY, 'box', 0).setOrigin(0.5, 1).play('box-blink').setScale(1.4)
-    this.add.sprite(800, streetY - 4, 'cable', 0).setOrigin(0.5, 1).play('cable-spin').setScale(1.25)
+    this.add.sprite(800, streetY, 'cable', 0).setOrigin(0.5, 1).play('cable-spin').setScale(1.25)
   }
 }
