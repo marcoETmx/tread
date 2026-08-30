@@ -2,44 +2,13 @@ import Phaser from 'phaser'
 import { gameConfig } from './config/gameConfig.ts'
 import { audio } from './systems/AudioSystem.ts'
 import { bindTouchControls } from './systems/InputSystem.ts'
+import { applyDisplayFit, bindDisplayFit } from './systems/ScaleSystem.ts'
 import './style.css'
 
 function isPortraitMobile(): boolean {
   const portrait = window.matchMedia('(orientation: portrait)').matches
   const narrow = Math.min(window.innerWidth, window.innerHeight) < 900
   return portrait && narrow
-}
-
-function layoutViewport(): { width: number; height: number; left: number; top: number } {
-  const vv = window.visualViewport
-  const zoomed = vv != null && Math.abs(vv.scale - 1) > 0.02
-  if (vv && !zoomed) {
-    return {
-      width: Math.round(vv.width),
-      height: Math.round(vv.height),
-      left: Math.round(vv.offsetLeft),
-      top: Math.round(vv.offsetTop),
-    }
-  }
-  return {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    left: 0,
-    top: 0,
-  }
-}
-
-function refreshScale(game: Phaser.Game): void {
-  window.scrollTo(0, 0)
-  const parent = document.getElementById('game-root')
-  if (parent) {
-    const box = layoutViewport()
-    parent.style.width = `${box.width}px`
-    parent.style.height = `${box.height}px`
-    parent.style.left = `${box.left}px`
-    parent.style.top = `${box.top}px`
-  }
-  game.scale.refresh()
 }
 
 function preventPageZoom(): void {
@@ -74,25 +43,20 @@ function syncOrientation(game: Phaser.Game): void {
   if (portrait) game.pause()
   else if (game.isPaused) game.resume()
   requestAnimationFrame(() => {
-    refreshScale(game)
-    requestAnimationFrame(() => refreshScale(game))
+    applyDisplayFit(game)
+    requestAnimationFrame(() => applyDisplayFit(game))
   })
 }
 
 preventPageZoom()
 const game = new Phaser.Game(gameConfig)
 bindTouchControls()
+bindDisplayFit(game)
 syncOrientation(game)
 
 window.addEventListener('resize', () => syncOrientation(game))
 window.addEventListener('orientationchange', () => {
   syncOrientation(game)
-  window.setTimeout(() => refreshScale(game), 250)
-})
-window.visualViewport?.addEventListener('resize', () => refreshScale(game))
-window.visualViewport?.addEventListener('scroll', () => {
-  window.scrollTo(0, 0)
-  refreshScale(game)
 })
 document.addEventListener('pointerdown', () => audio.resume(), { once: true })
 document.addEventListener('keydown', () => audio.resume(), { once: true })

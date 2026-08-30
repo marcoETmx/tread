@@ -16,13 +16,7 @@
   </head>
   <body>
     <div id="game-root">
-      <div id="touch-ui" aria-hidden="true">
-        <div class="cluster">
-          <button type="button" id="btn-left" data-dir="left" aria-label="Izquierda">◀</button>
-          <button type="button" id="btn-right" data-dir="right" aria-label="Derecha">▶</button>
-        </div>
-        <button type="button" id="btn-jump" aria-label="Saltar">SALTAR</button>
-      </div>
+      <div id="game-frame"></div>
     </div>
 
     <div id="rotate-overlay" hidden>
@@ -31,6 +25,14 @@
         <p>Gira el teléfono</p>
         <span>Tread se juega en horizontal</span>
       </div>
+    </div>
+
+    <div id="touch-ui" aria-hidden="true">
+      <div class="cluster">
+        <button type="button" id="btn-left" data-dir="left" aria-label="Izquierda">◀</button>
+        <button type="button" id="btn-right" data-dir="right" aria-label="Derecha">▶</button>
+      </div>
+      <button type="button" id="btn-jump" aria-label="Saltar">SALTAR</button>
     </div>
 
     <script type="module" src="/src/main.ts"></script>
