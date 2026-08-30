@@ -33,7 +33,7 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('wire', canvases.wire.toDataURL())
     this.load.image('window', canvases.window.toDataURL())
     this.load.image('sky', canvases.sky.toDataURL())
-    this.load.image('skyline', canvases.skyline.toDataURL())
+    this.textures.addCanvas('skyline', canvases.skyline)
     this.load.image('spark', canvases.spark.toDataURL())
     this.load.image('heart', canvases.heart.toDataURL())
 

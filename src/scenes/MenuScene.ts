@@ -39,7 +39,7 @@ export class MenuScene extends Phaser.Scene {
 
   create(): void {
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky').setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
-    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT + 8, 'skyline').setOrigin(0.5, 1).setAlpha(0.95)
+    this.add.image(GAME_WIDTH / 2, GAME_HEIGHT + 4, 'skyline').setOrigin(0.5, 1).setAlpha(0.96)
 
     this.add.image(210, 520, 'van').setScale(2)
     const preview = this.add.sprite(360, 488, 'player', 0).setScale(1.5)

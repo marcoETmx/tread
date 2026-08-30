@@ -372,8 +372,18 @@ function sheet(
   return el
 }
 
-const SKYLINE_WIDTH = 2560
-const SKYLINE_HEIGHT = 420
+const SKYLINE_WIDTH = 1280
+const SKYLINE_HEIGHT = 260
+
+type NearBuilding = {
+  x: number
+  w: number
+  h: number
+  kind: 'block' | 'tower' | 'step' | 'spire' | 'antenna' | 'wide' | 'factory'
+  windowGapX: number
+  windowGapY: number
+  lit: number
+}
 
 function seededRandom(seed: number): () => number {
   let state = seed >>> 0
@@ -381,38 +391,6 @@ function seededRandom(seed: number): () => number {
     state = (Math.imul(state, 1664525) + 1013904223) >>> 0
     return state / 4294967296
   }
-}
-
-type SkylineBuilding = {
-  x: number
-  w: number
-  h: number
-  kind: 'block' | 'tower' | 'step' | 'spire' | 'antenna'
-}
-
-function layoutSkyline(rng: () => number, width: number, maxHeight: number): SkylineBuilding[] {
-  const buildings: SkylineBuilding[] = []
-  let x = -8
-  while (x < width + 12) {
-    const roll = rng()
-    const kind: SkylineBuilding['kind'] =
-      roll > 0.92 ? 'spire' : roll > 0.78 ? 'tower' : roll > 0.62 ? 'step' : roll > 0.48 ? 'antenna' : 'block'
-    const w =
-      kind === 'tower'
-        ? 28 + Math.floor(rng() * 22)
-        : kind === 'spire'
-          ? 36 + Math.floor(rng() * 18)
-          : 42 + Math.floor(rng() * 58)
-    const h =
-      kind === 'tower'
-        ? Math.floor(maxHeight * (0.72 + rng() * 0.26))
-        : kind === 'spire'
-          ? Math.floor(maxHeight * (0.58 + rng() * 0.22))
-          : Math.floor(maxHeight * (0.28 + rng() * 0.46))
-    buildings.push({ x, w, h, kind })
-    x += w + Math.floor(rng() * 10) - 3
-  }
-  return buildings
 }
 
 function drawWindows(
@@ -423,55 +401,72 @@ function drawWindows(
   h: number,
   color: string,
   lit: number,
-  rng: () => number,
+  gapX: number,
+  gapY: number,
+  seed: number,
 ): void {
+  const rng = seededRandom(seed)
   ctx.fillStyle = color
   const inset = 5
-  for (let wy = top + 8; wy < top + h - 14; wy += 11) {
-    for (let wx = x + inset; wx < x + w - inset - 3; wx += 8) {
-      if (rng() < lit) ctx.fillRect(wx, wy, 4, 5)
+  const winW = gapX >= 10 ? 5 : 3
+  const winH = gapY >= 12 ? 6 : 4
+  for (let wy = top + 8; wy < top + h - 16; wy += gapY) {
+    for (let wx = x + inset; wx < x + w - inset - winW; wx += gapX) {
+      if (rng() < lit) ctx.fillRect(wx, wy, winW, winH)
     }
   }
 }
 
-function drawSkylineLayer(
+function drawBuilding(
   ctx: CanvasRenderingContext2D,
-  buildings: readonly SkylineBuilding[],
+  building: NearBuilding,
   canvasHeight: number,
   body: string,
   windows: string,
-  rng: () => number,
-  yNudge: number,
 ): void {
-  for (const building of buildings) {
-    const top = canvasHeight - building.h + yNudge
-    ctx.fillStyle = body
-    ctx.fillRect(building.x, top, building.w, building.h - yNudge)
+  const top = canvasHeight - building.h
+  ctx.fillStyle = body
+  ctx.fillRect(building.x, top, building.w, building.h)
 
-    if (building.kind === 'step') {
-      const stepW = Math.floor(building.w * 0.55)
-      const stepH = Math.floor(building.h * 0.22)
-      ctx.fillRect(building.x + Math.floor((building.w - stepW) / 2), top - stepH, stepW, stepH)
-    }
-
-    if (building.kind === 'tower' || building.kind === 'antenna') {
-      const mastH = 16 + Math.floor(rng() * 28)
-      ctx.fillRect(building.x + Math.floor(building.w / 2) - 1, top - mastH, 3, mastH)
-      ctx.fillRect(building.x + Math.floor(building.w / 2) - 5, top - mastH + 4, 11, 3)
-    }
-
-    if (building.kind === 'spire') {
-      const mid = building.x + Math.floor(building.w / 2)
-      ctx.beginPath()
-      ctx.moveTo(building.x + 4, top)
-      ctx.lineTo(mid, top - 28)
-      ctx.lineTo(building.x + building.w - 4, top)
-      ctx.closePath()
-      ctx.fill()
-    }
-
-    drawWindows(ctx, building.x, top, building.w, building.h, windows, building.kind === 'tower' ? 0.82 : 0.62, rng)
+  if (building.kind === 'step') {
+    const stepW = Math.floor(building.w * 0.58)
+    const stepH = 22
+    ctx.fillRect(building.x + Math.floor((building.w - stepW) / 2), top - stepH, stepW, stepH)
   }
+
+  if (building.kind === 'tower' || building.kind === 'antenna') {
+    ctx.fillRect(building.x + Math.floor(building.w / 2) - 1, top - 26, 3, 26)
+    ctx.fillRect(building.x + Math.floor(building.w / 2) - 6, top - 22, 12, 3)
+  }
+
+  if (building.kind === 'spire') {
+    const mid = building.x + Math.floor(building.w / 2)
+    ctx.beginPath()
+    ctx.moveTo(building.x + 6, top)
+    ctx.lineTo(mid, top - 34)
+    ctx.lineTo(building.x + building.w - 6, top)
+    ctx.closePath()
+    ctx.fill()
+  }
+
+  if (building.kind === 'factory') {
+    ctx.fillRect(building.x + 10, top - 28, 10, 28)
+    ctx.fillRect(building.x + 28, top - 18, 8, 18)
+    ctx.fillRect(building.x + building.w - 22, top - 36, 12, 36)
+  }
+
+  drawWindows(
+    ctx,
+    building.x,
+    top,
+    building.w,
+    building.h,
+    windows,
+    building.lit,
+    building.windowGapX,
+    building.windowGapY,
+    0x9a00 + building.x * 17 + building.w,
+  )
 }
 
 function skyTexture(): HTMLCanvasElement {
@@ -485,45 +480,67 @@ function skyTexture(): HTMLCanvasElement {
   return el
 }
 
-function drawLandmarkTower(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  canvasHeight: number,
-  body: string,
-  windows: string,
-): void {
-  const w = 48
-  const h = 390
-  const top = canvasHeight - h
-  ctx.fillStyle = body
-  ctx.fillRect(x, top + 70, w, h - 70)
-  ctx.fillRect(x + 10, top + 24, 28, 50)
-  ctx.fillRect(x + 22, top, 4, 28)
-  ctx.fillRect(x + 16, top + 8, 16, 4)
-  drawWindows(ctx, x, top + 70, w, h - 70, windows, 0.88, seededRandom(0x70e4))
-}
-
 function skylineTexture(): HTMLCanvasElement {
   const width = SKYLINE_WIDTH
   const height = SKYLINE_HEIGHT
   const { el, ctx } = canvas(width, height)
   ctx.clearRect(0, 0, width, height)
 
-  const farRng = seededRandom(0x71ead)
-  const midRng = seededRandom(0xc0a71)
-  const nearRng = seededRandom(0x51a1e)
+  const far = [
+    [0, 90, 70],
+    [86, 54, 110],
+    [136, 120, 64],
+    [248, 40, 150],
+    [284, 72, 88],
+    [352, 160, 52],
+    [508, 48, 170],
+    [552, 96, 78],
+    [644, 70, 124],
+    [710, 130, 60],
+    [836, 44, 96],
+    [876, 88, 140],
+    [960, 50, 72],
+    [1006, 110, 100],
+    [1110, 66, 58],
+    [1170, 80, 132],
+    [1244, 50, 84],
+  ] as const
 
-  const far = layoutSkyline(farRng, width, 200)
-  const mid = layoutSkyline(midRng, width, 290)
-  const near = layoutSkyline(nearRng, width, 340)
+  ctx.fillStyle = '#3A6280'
+  for (const [x, w, h] of far) {
+    ctx.fillRect(x, height - h, w, h)
+  }
 
-  drawSkylineLayer(ctx, far, height, '#3A6280', '#E8C98A', farRng, 0)
-  drawSkylineLayer(ctx, mid, height, '#16344C', '#FFD27A', midRng, 0)
-  drawLandmarkTower(ctx, 1180, height, '#0B2838', '#FFD27A')
-  drawSkylineLayer(ctx, near, height, '#051D2E', '#E8B86A', nearRng, 0)
+  const near: NearBuilding[] = [
+    { x: -6, w: 78, h: 92, kind: 'block', windowGapX: 9, windowGapY: 11, lit: 0.7 },
+    { x: 68, w: 36, h: 148, kind: 'tower', windowGapX: 8, windowGapY: 10, lit: 0.85 },
+    { x: 102, w: 94, h: 70, kind: 'wide', windowGapX: 12, windowGapY: 14, lit: 0.45 },
+    { x: 188, w: 50, h: 118, kind: 'step', windowGapX: 9, windowGapY: 12, lit: 0.6 },
+    { x: 234, w: 28, h: 196, kind: 'antenna', windowGapX: 8, windowGapY: 9, lit: 0.9 },
+    { x: 260, w: 72, h: 84, kind: 'block', windowGapX: 10, windowGapY: 11, lit: 0.55 },
+    { x: 328, w: 110, h: 64, kind: 'factory', windowGapX: 14, windowGapY: 16, lit: 0.35 },
+    { x: 430, w: 44, h: 132, kind: 'spire', windowGapX: 9, windowGapY: 11, lit: 0.75 },
+    { x: 470, w: 86, h: 100, kind: 'block', windowGapX: 11, windowGapY: 13, lit: 0.5 },
+    { x: 548, w: 32, h: 168, kind: 'tower', windowGapX: 8, windowGapY: 10, lit: 0.8 },
+    { x: 576, w: 120, h: 76, kind: 'wide', windowGapX: 13, windowGapY: 12, lit: 0.4 },
+    { x: 688, w: 40, h: 210, kind: 'antenna', windowGapX: 8, windowGapY: 9, lit: 0.88 },
+    { x: 724, w: 68, h: 112, kind: 'step', windowGapX: 10, windowGapY: 11, lit: 0.62 },
+    { x: 788, w: 54, h: 90, kind: 'block', windowGapX: 9, windowGapY: 12, lit: 0.58 },
+    { x: 836, w: 98, h: 58, kind: 'factory', windowGapX: 15, windowGapY: 14, lit: 0.3 },
+    { x: 926, w: 46, h: 154, kind: 'spire', windowGapX: 9, windowGapY: 10, lit: 0.72 },
+    { x: 968, w: 80, h: 96, kind: 'block', windowGapX: 11, windowGapY: 12, lit: 0.52 },
+    { x: 1042, w: 34, h: 178, kind: 'tower', windowGapX: 8, windowGapY: 9, lit: 0.84 },
+    { x: 1072, w: 74, h: 82, kind: 'step', windowGapX: 10, windowGapY: 13, lit: 0.48 },
+    { x: 1140, w: 58, h: 124, kind: 'block', windowGapX: 9, windowGapY: 11, lit: 0.66 },
+    { x: 1194, w: 92, h: 68, kind: 'wide', windowGapX: 12, windowGapY: 15, lit: 0.42 },
+  ]
+
+  for (const building of near) {
+    drawBuilding(ctx, building, height, '#051D2E', '#FFD27A')
+  }
 
   ctx.fillStyle = '#0B2838'
-  ctx.fillRect(0, height - 14, width, 14)
+  ctx.fillRect(0, height - 12, width, 12)
   return el
 }
 
