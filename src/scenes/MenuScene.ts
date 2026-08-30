@@ -40,10 +40,11 @@ export class MenuScene extends Phaser.Scene {
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'sky').setDisplaySize(GAME_WIDTH, GAME_HEIGHT)
     this.add.image(GAME_WIDTH / 2, GAME_HEIGHT + 4, 'skyline').setOrigin(0.5, 1).setAlpha(0.96)
 
-    this.add.image(210, 520, 'van').setScale(2)
-    const preview = this.add.sprite(360, 500, 'player', 0).setScale(1.7)
+    const streetY = 575
+    this.add.image(210, streetY, 'van').setOrigin(0.5, 1).setScale(1.7)
+    const preview = this.add.sprite(400, streetY, 'player', 0).setOrigin(0.5, 1).setScale(1.6)
     preview.play('player-walk')
-    const dogPreview = this.add.sprite(455, 545, 'dog', 0).setScale(1.5)
+    const dogPreview = this.add.sprite(490, streetY, 'dog', 0).setOrigin(0.5, 1).setScale(1.5)
     dogPreview.play('dog-run')
 
     this.add
@@ -94,8 +95,8 @@ export class MenuScene extends Phaser.Scene {
       })
       .setOrigin(0.5)
 
-    this.add.image(980, 500, 'house').setScale(2)
-    this.add.image(860, 545, 'box').setScale(1.4)
-    this.add.image(820, 528, 'cable').setScale(1.2)
+    this.add.image(980, streetY, 'house').setOrigin(0.5, 1).setScale(2)
+    this.add.image(860, streetY, 'box').setOrigin(0.5, 1).setScale(1.4)
+    this.add.image(820, streetY - 6, 'cable').setOrigin(0.5, 1).setScale(1.2)
   }
 }

@@ -81,8 +81,8 @@ export class WinScene extends Phaser.Scene {
 
   create(): void {
     resultUi(this, copy.winTitle, copy.winBody, theme.orange)
-    this.add.sprite(GAME_WIDTH / 2, 560, 'player', 6)
-    this.add.image(GAME_WIDTH / 2 + 70, 568, 'box')
+    this.add.sprite(GAME_WIDTH / 2, 620, 'player', 6).setOrigin(0.5, 1)
+    this.add.image(GAME_WIDTH / 2 + 70, 620, 'box').setOrigin(0.5, 1)
   }
 }
 

@@ -110,6 +110,20 @@ const SPRITE = {
   Q: '#6A4830',
 } satisfies Palette
 
+const CAR = {
+  C: '#141414',
+  W: '#F4F4F4',
+  w: '#D0D4D8',
+  H: '#FFFFFF',
+  L: '#3A4A58',
+  l: '#243038',
+  B: '#1C1C1C',
+  N: '#0A0A0A',
+  S: '#C4C8CC',
+  R: '#C42828',
+  Y: '#F0D878',
+} satisfies Palette
+
 const PLAYER_W = 36
 const PLAYER_H = 40
 const DOG_W = 40
@@ -556,25 +570,26 @@ const CABLE = [
   '....OOOO....',
 ]
 
-const VAN = [
-  '........................',
-  '.........CCCCCCCCCCC....',
-  '.......CCCCCCCCCCCCCCC..',
-  '......CCNNNNNNNNNNNCCC..',
-  '......CCNYYYYYYYYYNCCC..',
-  '.....CCCNYYYYYYYYYNCCCC.',
-  '.....CCCCCCCCCCCCCCCCCC.',
-  '....CCOOOOOOOOOOOOOOCCC.',
-  '....CCCCCCCCCCCCCCCCCCC.',
-  '...CCCCCCCCCCCCCCCCCCCC.',
-  '...CC..........CC....CC.',
-  '...C............C....C..',
-  '..CCC..........CCC..CCC.',
-  '.CBBBC........CBBBCBBBC.',
-  '.CBWBC........CBWBCBWBC.',
-  '.CBBBC........CBBBCBBBC.',
-  '..CCC..........CCC..CCC.',
-]
+const VAN = frame('dolphin', 40, 18, [
+  '..................CCCCCCCC..............',
+  '................CCWHHHHHHWCC............',
+  '..............CCWWWWWWWWWWWCC...........',
+  '........CCCCCCWWWWWWWWWWWWWWWCC.........',
+  '......CCWWWWWWWWWWWWWWWWWWWWWWCC........',
+  '.....CWWLLLLLLLLLLWWWWWWWWWWWWWWC.......',
+  '....CWWLLLLLLLLLLLLWWWWWWWWWWWWWWC......',
+  '....CWlLLLLLLLLLLLLWWWWWWWWWWWWWWWC.....',
+  '....CWWWWWWWWWWWWWWWWWWWWWWWWWWWWWC.....',
+  '....CRRWWWWWWWWWWWWWWWWWWWWWYYYYWWC.....',
+  '....CWWWWWWWWWWWWWWWWWWWWWWWWWWWWWC.....',
+  '....CBBBBBBBBBBBBBBBBBBBBBBBBBBBBBC.....',
+  '.....C..CCCC..............CCCC..C.......',
+  '.....C.CNNNC..............CNNNC.C.......',
+  '......CCNSNC..............CNSNCC........',
+  '.......CNNNC..............CNNNC.........',
+  '.......CNNNC..............CNNNC.........',
+  '........CCC................CCC..........',
+])
 
 const HOUSE = [
   '...............................',
@@ -919,7 +934,7 @@ export function createGeneratedCanvases(): Record<string, HTMLCanvasElement> {
       SPRITE,
     ),
     cable: sheet([CABLE], 3),
-    van: sheet([VAN], 3),
+    van: sheet([dropToGround('dolphin', VAN)], 3, CAR),
     house: sheet([HOUSE], 3),
     box: sheet([BOX], 3),
     cone: sheet([CONE], 3),
