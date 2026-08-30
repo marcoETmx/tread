@@ -33,7 +33,8 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image('wire', canvases.wire.toDataURL())
     this.load.image('window', canvases.window.toDataURL())
     this.load.image('sky', canvases.sky.toDataURL())
-    this.textures.addCanvas('skyline', canvases.skyline)
+    const skyline = this.textures.addCanvas('skyline', canvases.skyline)
+    skyline?.setWrap(Phaser.Textures.WrapMode.CLAMP_TO_EDGE, Phaser.Textures.WrapMode.CLAMP_TO_EDGE)
     this.load.image('spark', canvases.spark.toDataURL())
     this.load.image('heart', canvases.heart.toDataURL())
 
